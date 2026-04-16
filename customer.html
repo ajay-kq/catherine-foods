@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Amma's Kitchen — Authentic South Indian Home Food</title>
+<link href="https://fonts.googleapis.com/css2?family=Yeseva+One&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+:root{--sf:#E8620A;--sf-l:#FDF0E8;--sf-d:#B34A00;--tu:#F5A623;--gr:#2D7A3A;--gr-l:#EAF5EC;--gold:#B8860B;--gold-l:#FFFBEC;--gold-bdr:#E8C84A;--brown:#3D1F0A;--cream:#FDFAF5;--text:#2A1A08;--muted:#7A6050;--bdr:rgba(61,31,10,.1);--card:#fff;--shadow:0 2px 12px rgba(61,31,10,.07)}
+*{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);overflow-x:hidden}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--sf);border-radius:3px}
+a{text-decoration:none;color:inherit}
+
+/* ── NAV ── */
+nav{position:sticky;top:0;z-index:100;background:rgba(253,250,245,.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--bdr);display:flex;justify-content:space-between;align-items:center;padding:.72rem 1.5rem;gap:.55rem;flex-wrap:wrap}
+.nav-logo{display:flex;align-items:center;gap:.48rem;flex-shrink:0}
+.nav-logo-icon{width:35px;height:35px;border-radius:50%;background:var(--sf);display:flex;align-items:center;justify-content:center;font-size:.95rem;flex-shrink:0}
+.nav-brand{font-family:'Yeseva One',serif;font-size:1.08rem;color:var(--sf-d);line-height:1}
+.nav-tagline{font-size:.6rem;color:var(--muted)}
+.nav-tabs{display:flex;gap:2px;background:var(--sf-l);border-radius:20px;padding:3px;flex-wrap:nowrap}
+.tab-btn{padding:.32rem .78rem;border-radius:16px;font-size:.74rem;font-weight:500;cursor:pointer;border:none;background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;transition:all .18s;white-space:nowrap}
+.tab-btn.active{background:var(--sf);color:#fff}
+.tab-btn.gold-tb.active{background:var(--gold);color:#fff}
+.nav-right{display:flex;align-items:center;gap:.4rem}
+.cart-fab{display:flex;align-items:center;gap:.38rem;background:var(--sf);color:#fff;border:none;padding:.42rem .9rem;border-radius:20px;font-size:.76rem;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .18s}
+.cart-fab:hover{background:var(--sf-d)}
+.cart-cnt{background:#fff;color:var(--sf);border-radius:50%;width:16px;height:16px;font-size:.6rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+@keyframes cpop{0%,100%{transform:scale(1)}50%{transform:scale(1.4)}}
+.cart-cnt.pop{animation:cpop .28s ease}
+.golden-fab{display:none;align-items:center;gap:.35rem;background:var(--gold);color:#fff;border:none;padding:.42rem .82rem;border-radius:20px;font-size:.73rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif}
+
+/* ── TICKER ── */
+.ticker{background:var(--tu);color:var(--brown);padding:.44rem 0;overflow:hidden}
+.ticker-track{display:inline-flex;gap:2.2rem;white-space:nowrap;animation:tick 28s linear infinite}
+.ticker-track:hover{animation-play-state:paused}
+@keyframes tick{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.ti{display:inline-flex;align-items:center;gap:.38rem;font-size:.77rem;font-weight:500}
+.ti-pill{background:var(--brown);color:var(--tu);padding:.1rem .5rem;border-radius:7px;font-size:.65rem;font-weight:700;letter-spacing:.04em}
+
+/* ── HERO ── */
+.hero{background:var(--brown);color:#fff;padding:2.7rem 1.5rem 2rem;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 12% 55%,rgba(245,166,35,.11) 0,transparent 55%),radial-gradient(ellipse at 85% 15%,rgba(232,98,10,.09) 0,transparent 45%)}
+.hero-in{position:relative;z-index:1;max-width:540px}
+.hero-pill{display:inline-flex;align-items:center;gap:.36rem;background:rgba(245,166,35,.16);border:1px solid rgba(245,166,35,.3);color:var(--tu);font-size:.68rem;font-weight:500;padding:.22rem .76rem;border-radius:20px;margin-bottom:.9rem;letter-spacing:.04em}
+.hero h1{font-family:'Yeseva One',serif;font-size:clamp(1.8rem,4vw,2.6rem);line-height:1.14;margin-bottom:.7rem}
+.hero h1 em{color:var(--tu);font-style:normal}
+.hero-sub{font-size:.87rem;color:rgba(255,255,255,.62);line-height:1.72;margin-bottom:1.35rem;max-width:395px}
+.hero-stats{display:flex;gap:1.55rem;flex-wrap:wrap}
+.hs strong{display:block;font-size:1.18rem;font-weight:700;color:var(--tu)}
+.hs span{font-size:.65rem;color:rgba(255,255,255,.42)}
+
+/* ── TAB PANELS ── */
+.tab-panel{display:none}.tab-panel.active{display:block}
+
+/* ── GOLDEN HERO ── */
+.gold-hero{background:linear-gradient(135deg,#3D2800,#5A3800);border-bottom:2px solid var(--gold-bdr)}
+.gh-inner{max-width:900px;margin:0 auto;padding:1.65rem 1.5rem;display:flex;align-items:center;gap:1.4rem;flex-wrap:wrap}
+.gh-icon{font-size:2.8rem;flex-shrink:0}
+.gh-text h2{font-family:'Yeseva One',serif;font-size:1.35rem;color:var(--gold-bdr);margin-bottom:.28rem}
+.gh-text p{font-size:.8rem;color:rgba(255,255,255,.6);line-height:1.68}
+.gh-badge{background:var(--gold);color:#fff;padding:.28rem .78rem;border-radius:10px;font-size:.72rem;font-weight:600;display:inline-flex;align-items:center;gap:.28rem;margin-top:.6rem}
+
+/* ── SECTION ── */
+.sec{padding:1.6rem 1.5rem;max-width:1200px;margin:0 auto}
+.sec-hdr{display:flex;align-items:center;gap:.68rem;margin-bottom:1.18rem;flex-wrap:wrap}
+.sec-hdr h2{font-family:'Yeseva One',serif;font-size:1.38rem}
+.time-lbl{background:var(--sf-l);color:var(--sf-d);border:1px solid rgba(232,98,10,.18);padding:.2rem .68rem;border-radius:13px;font-size:.68rem;font-weight:500}
+.gold-lbl{background:var(--gold-l);color:var(--gold);border:1px solid var(--gold-bdr);padding:.2rem .68rem;border-radius:13px;font-size:.68rem;font-weight:500}
+
+/* ── PREBOOK BANNER ── */
+.prebook-bar{background:var(--brown);color:#fff;border-radius:14px;padding:.9rem 1.2rem;display:flex;align-items:center;justify-content:space-between;gap:.8rem;margin-bottom:1.6rem;flex-wrap:wrap}
+.prebook-bar h3{font-family:'Yeseva One',serif;font-size:.92rem;margin-bottom:.12rem}
+.prebook-bar p{font-size:.7rem;color:rgba(255,255,255,.5)}
+.prebook-cta{background:var(--tu);color:var(--brown);border:none;padding:.48rem 1.15rem;border-radius:18px;font-size:.76rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif}
+
+/* ── FOOD GRID ── */
+.food-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(182px,1fr));gap:.88rem}
+
+/* ── FOOD CARD ── */
+.food-card{background:var(--card);border-radius:15px;border:1px solid var(--bdr);overflow:hidden;transition:transform .2s,box-shadow .2s;position:relative}
+.food-card:not(.sold-out):hover{transform:translateY(-3px);box-shadow:0 8px 22px rgba(61,31,10,.1)}
+.food-card.sold-out{background:#f6f4f1;opacity:.7}
+.food-card.gold-card{border-color:var(--gold-bdr);border-width:1.5px}
+.food-visual{height:132px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.food-emoji{font-size:3.6rem;animation:fdfl 3.2s ease-in-out infinite;filter:drop-shadow(0 5px 9px rgba(0,0,0,.12))}
+.food-card:nth-child(2n) .food-emoji{animation-delay:.55s}
+.food-card:nth-child(3n) .food-emoji{animation-delay:1.1s}
+.food-card:nth-child(4n) .food-emoji{animation-delay:1.65s}
+@keyframes fdfl{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-8px) rotate(2deg)}}
+.food-card.sold-out .food-emoji{animation:none;filter:grayscale(1) opacity(.3)}
+.food-img-real{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.fd-shadow{position:absolute;bottom:7px;left:50%;transform:translateX(-50%);width:48px;height:7px;background:rgba(0,0,0,.07);border-radius:50%;filter:blur(2.5px)}
+.fd-badge{position:absolute;top:8px;left:8px;padding:.13rem .5rem;border-radius:9px;font-size:.61rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;z-index:2}
+.fb-hot{background:var(--sf);color:#fff}.fb-new{background:var(--gr);color:#fff}
+.fb-spl{background:var(--tu);color:var(--brown)}.fb-veg{background:var(--gr-l);color:var(--gr);border:1px solid #C0DD97}
+.fb-tmr{background:var(--brown);color:var(--tu)}.fb-gold{background:var(--gold);color:#fff}
+.sold-over{position:absolute;inset:0;background:rgba(246,244,241,.7);display:flex;align-items:center;justify-content:center;z-index:3}
+.sold-tag{background:#888;color:#fff;padding:.25rem .8rem;border-radius:18px;font-size:.68rem;font-weight:600;transform:rotate(-5deg)}
+.food-info{padding:.76rem .86rem .86rem}
+.food-stars{font-size:.61rem;color:var(--tu);margin-bottom:.33rem;display:flex;align-items:center;gap:.32rem}
+.star-ct{color:var(--muted)}
+.food-name{font-family:'Yeseva One',serif;font-size:.87rem;line-height:1.27;margin-bottom:.18rem}
+.food-cat{font-size:.59rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.28rem}
+.food-desc{font-size:.7rem;color:var(--muted);line-height:1.54;margin-bottom:.62rem}
+.food-foot{display:flex;align-items:center;justify-content:space-between;gap:.4rem}
+.food-price{font-size:.96rem;font-weight:700;color:var(--sf-d)}
+.food-price small{font-size:.6rem;color:var(--muted);font-weight:400;display:block}
+.orig-price{text-decoration:line-through;color:var(--muted);font-size:.75rem;font-weight:400;margin-left:.22rem}
+.veg-dot{display:inline-block;width:9px;height:9px;border-radius:2px;border:1.5px solid;position:relative;margin-right:3px;vertical-align:middle}
+.veg-dot::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:4px;height:4px;border-radius:50%}
+.veg-dot.veg{border-color:var(--gr)}.veg-dot.veg::after{background:var(--gr)}
+.veg-dot.nonveg{border-color:#c0392b}.veg-dot.nonveg::after{background:#c0392b}
+.add-btn{width:29px;height:29px;border-radius:50%;background:var(--sf);color:#fff;border:none;font-size:1.18rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .14s;flex-shrink:0}
+.add-btn:hover{background:var(--sf-d);transform:scale(1.1)}
+.gold-card .add-btn{background:var(--gold)}.gold-card .add-btn:hover{background:#8B6508}
+.qty-ctrl{display:flex;align-items:center;gap:.34rem}
+.qty-btn{width:23px;height:23px;border-radius:50%;border:1.5px solid var(--sf);background:transparent;color:var(--sf);font-size:.84rem;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:600;transition:all .13s;flex-shrink:0}
+.qty-btn:hover{background:var(--sf);color:#fff}
+.gold-card .qty-btn{border-color:var(--gold);color:var(--gold)}.gold-card .qty-btn:hover{background:var(--gold);color:#fff}
+.qty-num{font-size:.81rem;font-weight:600;min-width:14px;text-align:center;color:var(--sf-d)}
+
+/* ── GOLDEN SECTION ── */
+.gold-login-wrap{text-align:center;padding:2.2rem 1.5rem;max-width:480px;margin:0 auto}
+.glp-icon{font-size:3.2rem;margin-bottom:.85rem}
+.glp-title{font-family:'Yeseva One',serif;font-size:1.25rem;color:var(--gold);margin-bottom:.42rem}
+.glp-sub{font-size:.8rem;color:var(--muted);line-height:1.7;margin-bottom:1.15rem}
+.gold-welcome-bar{background:linear-gradient(135deg,#FFFBEC,#FFF8DC);border:1px solid var(--gold-bdr);border-radius:12px;padding:.88rem 1.1rem;display:flex;align-items:center;gap:.95rem;margin-bottom:1.25rem;flex-wrap:wrap}
+.gwb-disc{background:var(--gold);color:#fff;padding:.26rem .75rem;border-radius:10px;font-size:.76rem;font-weight:600;white-space:nowrap;margin-left:auto}
+
+/* ── RATINGS ── */
+.ratings-wrap{background:var(--card);border-top:1px solid var(--bdr);padding:1.75rem 1.5rem}
+.r-inner{max-width:900px;margin:0 auto}
+.r-hdr{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.68rem;margin-bottom:1.3rem}
+.r-hdr h2{font-family:'Yeseva One',serif;font-size:1.32rem}
+.r-sum{display:flex;align-items:center;gap:1.1rem;background:var(--sf-l);border-radius:12px;padding:.88rem 1.1rem;margin-bottom:1.2rem}
+.r-big{font-size:2.6rem;font-weight:700;color:var(--sf-d);line-height:1}
+.r-stars-big{color:var(--tu);font-size:1.1rem}
+.r-cnt{font-size:.7rem;color:var(--muted);margin-top:.16rem}
+.r-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:.88rem}
+.r-card{background:var(--cream);border:1px solid var(--bdr);border-radius:12px;padding:.92rem}
+.r-row{display:flex;align-items:center;gap:.56rem;margin-bottom:.46rem}
+.r-av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:.78rem;flex-shrink:0}
+.r-name{font-size:.81rem;font-weight:500}
+.r-date{font-size:.62rem;color:var(--muted)}
+.r-stars{color:var(--tu);font-size:.76rem}
+.r-item-tag{display:inline-block;background:var(--sf-l);color:var(--sf-d);border-radius:7px;padding:.1rem .46rem;font-size:.62rem;font-weight:500;margin:.33rem 0}
+.r-comment{font-size:.76rem;color:var(--muted);line-height:1.58}
+
+/* ── CART DRAWER ── */
+.cart-ov{position:fixed;inset:0;background:rgba(42,26,8,.5);z-index:200;opacity:0;pointer-events:none;transition:opacity .26s;backdrop-filter:blur(4px)}
+.cart-ov.open{opacity:1;pointer-events:all}
+.cart-drawer{position:fixed;right:0;top:0;bottom:0;width:370px;max-width:97vw;background:var(--cream);z-index:201;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;border-left:1px solid var(--bdr)}
+.cart-ov.open .cart-drawer{transform:translateX(0)}
+.cart-hdr{padding:.9rem 1.22rem;border-bottom:1px solid var(--bdr);display:flex;justify-content:space-between;align-items:center}
+.cart-hdr h3{font-family:'Yeseva One',serif;font-size:1.02rem}
+.cart-x{width:26px;height:26px;border-radius:50%;background:var(--sf-l);border:none;cursor:pointer;color:var(--sf-d);font-size:.86rem;display:flex;align-items:center;justify-content:center;transition:all .13s}
+.cart-x:hover{background:var(--sf);color:#fff}
+.cart-list{flex:1;overflow-y:auto;padding:.76rem 1.22rem}
+.cart-empty{text-align:center;padding:2.4rem 1rem;color:var(--muted)}
+.ci{display:flex;align-items:center;gap:.62rem;padding:.62rem 0;border-bottom:1px solid var(--bdr)}
+.ci-thumb{width:40px;height:40px;border-radius:9px;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0}
+.ci-thumb img{width:100%;height:100%;object-fit:cover}
+.ci-name{font-size:.78rem;font-weight:500;line-height:1.3}
+.ci-price{font-size:.72rem;color:var(--sf-d);font-weight:600;margin-top:.1rem}
+.ci-qty{display:flex;align-items:center;gap:.34rem;margin-left:auto;flex-shrink:0}
+.ci-qty .qty-btn{width:21px;height:21px;font-size:.76rem}
+.ci-qty .qty-num{font-size:.76rem}
+.cart-foot{padding:.9rem 1.22rem;border-top:1px solid var(--bdr)}
+.cart-total-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:.78rem}
+.c-total-lbl{font-size:.77rem;color:var(--muted)}
+.c-total-val{font-size:1.16rem;font-weight:700;color:var(--sf-d)}
+.checkout-btn{width:100%;background:var(--sf);color:#fff;border:none;padding:.76rem;border-radius:11px;font-size:.87rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .18s}
+.checkout-btn:hover{background:var(--sf-d)}
+.checkout-btn:disabled{background:#ccc;cursor:not-allowed}
+
+/* ── MODAL ── */
+.modal-ov{position:fixed;inset:0;background:rgba(42,26,8,.58);z-index:300;opacity:0;pointer-events:none;transition:opacity .24s;backdrop-filter:blur(6px);display:flex;align-items:flex-start;justify-content:center;padding:1rem;overflow-y:auto}
+.modal-ov.open{opacity:1;pointer-events:all}
+.modal-box{background:var(--cream);border-radius:17px;width:100%;max-width:540px;margin:auto;overflow:hidden;transform:translateY(18px);transition:transform .28s cubic-bezier(.4,0,.2,1)}
+.modal-ov.open .modal-box{transform:translateY(0)}
+.modal-hd{background:var(--brown);color:#fff;padding:.92rem 1.32rem;display:flex;justify-content:space-between;align-items:center}
+.modal-hd h3{font-family:'Yeseva One',serif;font-size:1rem}
+.gold-hd{background:linear-gradient(135deg,#7A5800,#C8960C)}
+.modal-x{background:rgba(255,255,255,.12);border:none;color:#fff;width:24px;height:24px;border-radius:50%;cursor:pointer;font-size:.86rem;display:flex;align-items:center;justify-content:center}
+.modal-body{padding:1.28rem}
+/* steps */
+.steps-bar{display:flex;gap:.26rem;margin-bottom:1.18rem}
+.si{flex:1;text-align:center;position:relative}
+.si-circ{width:23px;height:23px;border-radius:50%;border:2px solid var(--bdr);background:var(--cream);color:var(--muted);font-size:.68rem;font-weight:600;display:flex;align-items:center;justify-content:center;margin:0 auto .24rem}
+.si.active .si-circ{background:var(--sf);border-color:var(--sf);color:#fff}
+.si.done .si-circ{background:var(--gr);border-color:var(--gr);color:#fff}
+.si-lbl{font-size:.59rem;color:var(--muted)}
+.si.active .si-lbl{color:var(--sf);font-weight:500}
+.si::after{content:'';position:absolute;top:11px;left:calc(50% + 11px);right:calc(-50% + 11px);height:2px;background:var(--bdr);z-index:-1}
+.si:last-child::after{display:none}
+/* form */
+.fg{margin-bottom:.82rem}
+.fl{font-size:.72rem;font-weight:500;margin-bottom:.28rem;display:block;color:var(--text)}
+.req{color:var(--sf)}
+.fi{width:100%;padding:.58rem .78rem;border:1.5px solid var(--bdr);border-radius:9px;font-size:.8rem;font-family:'DM Sans',sans-serif;background:#fff;color:var(--text);transition:border-color .16s;outline:none}
+.fi:focus{border-color:var(--sf)}
+textarea.fi{resize:vertical;min-height:58px}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+/* map */
+#cMap{height:200px;border-radius:10px;border:1.5px solid var(--bdr);z-index:1;margin-top:.42rem}
+.map-sw{position:relative;margin-bottom:.42rem}
+.map-sw-icon{position:absolute;left:.65rem;top:50%;transform:translateY(-50%);font-size:.82rem;pointer-events:none}
+.fi.msrch{padding-left:2rem}
+.loc-ok{background:var(--gr-l);border:1px solid #C0DD97;border-radius:9px;padding:.48rem .8rem;font-size:.72rem;color:var(--gr);margin-top:.42rem;display:none;line-height:1.56}
+/* UPI */
+.upi-qr-box{width:170px;height:170px;border:2px solid var(--bdr);border-radius:13px;margin:0 auto .8rem;display:flex;align-items:center;justify-content:center;background:#fff;overflow:hidden}
+.upi-qr-box img{width:100%;height:100%;object-fit:contain;padding:8px}
+.upi-qr-ph{text-align:center;color:var(--muted)}
+.upi-id-row{background:var(--sf-l);border:1px dashed var(--sf);border-radius:9px;padding:.5rem .86rem;font-size:.8rem;font-weight:500;color:var(--sf-d);display:flex;align-items:center;justify-content:space-between;gap:.4rem;margin-bottom:.8rem}
+.copy-btn{background:var(--sf);color:#fff;border:none;padding:.17rem .56rem;border-radius:7px;font-size:.63rem;cursor:pointer;font-family:'DM Sans',sans-serif}
+.upi-steps{background:#fff;border:1px solid var(--bdr);border-radius:10px;padding:.7rem .82rem;margin-bottom:.8rem}
+.us{display:flex;align-items:center;gap:.52rem;padding:.25rem 0;font-size:.72rem;color:var(--muted)}
+.us-n{width:18px;height:18px;border-radius:50%;background:var(--sf-l);color:var(--sf-d);font-size:.62rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+/* order summary */
+.osum{background:#fff;border:1px solid var(--bdr);border-radius:10px;padding:.82rem;margin-bottom:.88rem}
+.osum-ttl{font-size:.68rem;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.48rem}
+.osum-row{display:flex;justify-content:space-between;font-size:.76rem;padding:.2rem 0;border-bottom:1px solid var(--bdr)}
+.osum-row:last-child{border-bottom:none}
+.osum-total{display:flex;justify-content:space-between;font-size:.84rem;font-weight:700;margin-top:.42rem;padding-top:.42rem;border-top:2px solid var(--bdr);color:var(--sf-d)}
+/* confirm */
+.conf-wrap{text-align:center;padding:1.1rem .7rem}
+.conf-icon{font-size:3rem;margin-bottom:.78rem;display:inline-block;animation:popin .48s cubic-bezier(.34,1.56,.64,1)}
+@keyframes popin{0%{transform:scale(0)}100%{transform:scale(1)}}
+.conf-title{font-family:'Yeseva One',serif;font-size:1.25rem;color:var(--gr);margin-bottom:.38rem}
+.conf-sub{font-size:.77rem;color:var(--muted);line-height:1.68;margin-bottom:.9rem}
+.conf-detail{background:#fff;border:1px solid var(--bdr);border-radius:10px;padding:.82rem;text-align:left;margin-bottom:.88rem}
+.cdr{display:flex;justify-content:space-between;font-size:.75rem;padding:.2rem 0}
+.cdr span:first-child{color:var(--muted)}
+.cdr span:last-child{font-weight:500}
+.track-btn{display:block;background:var(--gr);color:#fff;border:none;padding:.65rem 1.35rem;border-radius:10px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;text-align:center;margin-bottom:.46rem;width:100%}
+.nchips{display:flex;justify-content:center;gap:.38rem;flex-wrap:wrap;margin-top:.65rem}
+.nchip{background:var(--gr-l);color:var(--gr);border:1px solid #C0DD97;border-radius:9px;padding:.18rem .56rem;font-size:.66rem;font-weight:500}
+/* modal footer */
+.mft{padding:.82rem 1.32rem;border-top:1px solid var(--bdr);display:flex;gap:.58rem}
+.btn-p{flex:1;background:var(--sf);color:#fff;border:none;padding:.72rem;border-radius:10px;font-size:.84rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .16s}
+.btn-p:hover{background:var(--sf-d)}
+.btn-s{background:transparent;color:var(--muted);border:1.5px solid var(--bdr);padding:.72rem 1rem;border-radius:10px;font-size:.81rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
+.btn-s:hover{border-color:var(--sf);color:var(--sf)}
+.btn-gold{background:var(--gold);color:#fff;border:none}
+.btn-gold:hover{background:#8B6508}
+
+/* ── AADHAAR ── */
+.adhaar-zone{border:2px dashed var(--gold-bdr);border-radius:12px;padding:1.32rem;text-align:center;cursor:pointer;transition:border-color .16s;background:var(--gold-l);position:relative}
+.adhaar-zone:hover{border-color:var(--gold)}
+.adhaar-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.adhaar-prev{max-width:100%;max-height:195px;border-radius:9px;display:block;margin:.65rem auto;border:1px solid var(--bdr)}
+.age-disp{font-size:2.4rem;font-weight:700;color:var(--gold);text-align:center;margin:.38rem 0;line-height:1}
+.age-ok{background:var(--gr-l);border:1px solid #C0DD97;border-radius:9px;padding:.45rem .75rem;font-size:.74rem;color:var(--gr);text-align:center}
+.age-fail{background:#FCEBEB;border:1px solid #F09595;border-radius:9px;padding:.45rem .75rem;font-size:.74rem;color:#c0392b;text-align:center}
+.cam-btn{display:inline-flex;align-items:center;gap:.35rem;background:var(--brown);color:#fff;border:none;padding:.4rem .85rem;border-radius:8px;font-size:.73rem;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:.52rem}
+
+/* ── STAR INPUT ── */
+.star-input{display:flex;gap:.36rem;margin:.48rem 0}
+.star-input .star{font-size:1.7rem;cursor:pointer;color:#ddd;transition:color .12s;line-height:1}
+.star-input .star.lit{color:var(--tu)}
+
+/* ── CHATBOT ── */
+.chat-fab{position:fixed;bottom:1.4rem;right:1.4rem;z-index:150;width:48px;height:48px;border-radius:50%;background:var(--sf);color:#fff;border:none;font-size:1.28rem;cursor:pointer;box-shadow:0 4px 14px rgba(232,98,10,.35);transition:transform .17s;display:flex;align-items:center;justify-content:center}
+.chat-fab:hover{transform:scale(1.07)}
+.chat-win{position:fixed;bottom:5.2rem;right:1.4rem;z-index:150;width:305px;max-width:92vw;background:var(--cream);border-radius:16px;border:1px solid var(--bdr);box-shadow:0 8px 28px rgba(61,31,10,.13);display:none;flex-direction:column;overflow:hidden;max-height:465px}
+.chat-win.open{display:flex}
+.chat-hdr{background:var(--brown);color:#fff;padding:.77rem 1.02rem;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.chat-av{width:30px;height:30px;border-radius:50%;background:var(--sf);display:flex;align-items:center;justify-content:center;font-size:.88rem;flex-shrink:0}
+.chat-nm{font-weight:500;font-size:.85rem}
+.chat-st{font-size:.62rem;color:rgba(255,255,255,.46)}
+.chat-close{background:transparent;border:none;color:rgba(255,255,255,.58);cursor:pointer;font-size:.9rem}
+.chat-msgs{flex:1;overflow-y:auto;padding:.76rem;display:flex;flex-direction:column;gap:.5rem}
+.cmsg{max-width:85%;padding:.46rem .78rem;border-radius:12px;font-size:.75rem;line-height:1.56;white-space:pre-line}
+.cmsg.bot{background:#fff;border:1px solid var(--bdr);border-radius:12px 12px 12px 3px;align-self:flex-start}
+.cmsg.user{background:var(--sf);color:#fff;border-radius:12px 12px 3px 12px;align-self:flex-end}
+.cmsg a{color:inherit;text-decoration:underline}
+.chat-qrs{display:flex;flex-wrap:wrap;gap:.34rem;padding:.38rem .76rem;flex-shrink:0}
+.qr-btn{background:var(--sf-l);color:var(--sf-d);border:1px solid rgba(232,98,10,.2);border-radius:14px;padding:.22rem .6rem;font-size:.68rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .13s}
+.qr-btn:hover{background:var(--sf);color:#fff}
+.chat-inp-row{display:flex;gap:.4rem;padding:.56rem .76rem;border-top:1px solid var(--bdr);flex-shrink:0}
+.chat-inp{flex:1;padding:.38rem .68rem;border:1.5px solid var(--bdr);border-radius:20px;font-size:.75rem;font-family:'DM Sans',sans-serif;outline:none;background:#fff}
+.chat-inp:focus{border-color:var(--sf)}
+.chat-send{width:26px;height:26px;border-radius:50%;background:var(--sf);color:#fff;border:none;cursor:pointer;font-size:.76rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+@keyframes tdot{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-4px)}}
+.td{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--muted);animation:tdot 1.2s infinite;margin:0 2px}
+.td:nth-child(2){animation-delay:.2s}.td:nth-child(3){animation-delay:.4s}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:4.8rem;left:50%;transform:translateX(-50%) translateY(9px);background:var(--brown);color:#fff;padding:.54rem 1.18rem;border-radius:22px;font-size:.75rem;font-weight:500;z-index:400;opacity:0;transition:all .23s;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── FOOTER ── */
+footer{background:var(--brown);color:rgba(255,255,255,.5);text-align:center;padding:1.5rem;font-size:.76rem}
+footer strong{color:var(--tu);font-family:'Yeseva One',serif;font-size:.96rem;display:block;margin-bottom:.32rem}
+
+/* ── RESPONSIVE ── */
+@media(max-width:600px){
+  nav{padding:.6rem .9rem;gap:.42rem}
+  .nav-tabs{gap:2px;padding:2px}.tab-btn{padding:.28rem .58rem;font-size:.7rem}
+  .hero{padding:1.85rem .9rem 1.52rem}
+  .sec{padding:1.3rem .9rem}
+  .food-grid{grid-template-columns:repeat(auto-fill,minmax(138px,1fr));gap:.7rem}
+  .frow{grid-template-columns:1fr}
+  .cart-drawer{width:100%}
+  .chat-win{right:.7rem;bottom:4.8rem;width:calc(100vw - 1.4rem)}
+}
+@media(min-width:1100px){.food-grid{grid-template-columns:repeat(auto-fill,minmax(205px,1fr))}}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <div class="nav-logo-icon">🍛</div>
+    <div><div class="nav-brand">Amma's Kitchen</div><div class="nav-tagline">Home · Fresh · Authentic</div></div>
+  </div>
+  <div class="nav-tabs" id="navTabs">
+    <button class="tab-btn active" id="tBtn-today"    onclick="switchTab('today',this)">Today</button>
+    <button class="tab-btn"        id="tBtn-tomorrow" onclick="switchTab('tomorrow',this)">Pre-Book Tomorrow</button>
+    <button class="tab-btn gold-tb" id="tBtn-golden"  onclick="switchTab('golden',this)" style="display:none">⭐ Golden</button>
+  </div>
+  <div class="nav-right">
+    <button class="golden-fab" id="goldenFab" onclick="openGoldenModal()">⭐ Golden Login</button>
+    <button class="cart-fab"   onclick="openCart()">🛒 Cart <span class="cart-cnt" id="cartCnt">0</span></button>
+  </div>
+</nav>
+
+<!-- TICKER -->
+<div class="ticker" id="tickerEl"><div class="ticker-track" id="tickerTrack"></div></div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-in">
+    <div class="hero-pill">🌿 Pure Homemade · No Preservatives · Daily Fresh</div>
+    <h1>Taste of <em>Amma's</em><br>Home Kitchen</h1>
+    <p class="hero-sub">Authentic South Indian meals cooked fresh every morning with love, traditional spices &amp; the warmth of home.</p>
+    <div class="hero-stats">
+      <div class="hs"><strong>150+</strong><span>Happy Orders</span></div>
+      <div class="hs"><strong>4.9★</strong><span>Avg Rating</span></div>
+      <div class="hs"><strong>11 AM</strong><span>Order Cutoff</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- TODAY -->
+<div class="tab-panel active" id="tab-today">
+  <div class="sec"><div class="sec-hdr"><h2>🌅 Breakfast</h2><span class="time-lbl">7:00 – 10:00 AM</span></div><div class="food-grid" id="grid-bfst"></div></div>
+  <div class="sec" style="padding-top:0"><div class="sec-hdr"><h2>☀️ Lunch</h2><span class="time-lbl">12:00 – 3:00 PM</span></div><div class="food-grid" id="grid-lunch"></div></div>
+</div>
+
+<!-- TOMORROW -->
+<div class="tab-panel" id="tab-tomorrow">
+  <div class="sec">
+    <div class="prebook-bar">
+      <div style="display:flex;align-items:center;gap:.72rem"><div style="font-size:1.65rem">📅</div><div><h3>Pre-Book Tomorrow's Meal</h3><p>Secure your slot — no shortage, no wait.</p></div></div>
+      <button class="prebook-cta">Book Now →</button>
+    </div>
+    <div class="sec-hdr"><h2>🌅 Tomorrow's Breakfast</h2><span class="time-lbl">Pre-booking Open</span></div>
+    <div class="food-grid" id="grid-tmr-bfst"></div>
+    <div class="sec-hdr" style="margin-top:1.35rem"><h2>☀️ Tomorrow's Lunch</h2><span class="time-lbl">Pre-booking Open</span></div>
+    <div class="food-grid" id="grid-tmr-lunch"></div>
+  </div>
+</div>
+
+<!-- GOLDEN -->
+<div class="tab-panel" id="tab-golden">
+  <div class="gold-hero">
+    <div class="gh-inner">
+      <div class="gh-icon">👴👵</div>
+      <div class="gh-text">
+        <h2>Golden People — Age 55+ Special</h2>
+        <p>Nutritious, light meals designed for senior health. Register with your Aadhaar to unlock exclusive discounts and a specially curated menu.</p>
+        <span class="gh-badge" id="ghBadge">⭐ Register / Login to see discounts</span>
+      </div>
+    </div>
+  </div>
+  <div id="gold-gate"><!-- Login prompt or welcome --></div>
+  <div id="gold-menu" style="display:none">
+    <div class="sec"><div class="sec-hdr"><h2>🌅 Morning Health Menu</h2><span class="gold-lbl">Golden Special</span></div><div class="food-grid" id="grid-gold-morning"></div></div>
+    <div class="sec" style="padding-top:0"><div class="sec-hdr"><h2>☀️ Lunch &amp; Dinner</h2><span class="gold-lbl">Golden Special</span></div><div class="food-grid" id="grid-gold-lunch"></div></div>
+  </div>
+</div>
+
+<!-- RATINGS -->
+<div class="ratings-wrap" id="ratingsSection">
+  <div class="r-inner">
+    <div class="r-hdr">
+      <h2>Ratings &amp; Reviews</h2>
+      <button onclick="openRatingModal()" style="background:var(--sf);color:#fff;border:none;padding:.38rem .88rem;border-radius:16px;font-size:.74rem;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif">+ Write Review</button>
+    </div>
+    <div id="rSummary"></div>
+    <div class="r-grid" id="rGrid"></div>
+  </div>
+</div>
+
+<footer>
+  <strong>Amma's Kitchen</strong>
+  📍 Home delivery within 5 km &nbsp;·&nbsp; ⏰ Breakfast 7–10 AM &nbsp;·&nbsp; Lunch 12–3 PM
+  <div style="margin-top:.28rem;font-size:.65rem;opacity:.36">Homemade with ❤️ · No preservatives</div>
+</footer>
+
+<!-- CART DRAWER -->
+<div class="cart-ov" id="cartOv" onclick="if(event.target===this)closeCart()">
+  <div class="cart-drawer">
+    <div class="cart-hdr"><h3>Your Cart 🛒</h3><button class="cart-x" onclick="closeCart()">✕</button></div>
+    <div class="cart-list" id="cartList"></div>
+    <div class="cart-foot">
+      <div class="cart-total-row"><span class="c-total-lbl">Total</span><span class="c-total-val" id="cartTotalDisp">₹0</span></div>
+      <button class="checkout-btn" id="checkoutBtn" disabled onclick="startCheckout()">Review &amp; Place Order →</button>
+    </div>
+  </div>
+</div>
+
+<!-- CHECKOUT MODAL -->
+<div class="modal-ov" id="checkoutModal">
+  <div class="modal-box">
+    <div class="modal-hd"><h3 id="coTitle">Place Your Order</h3><button class="modal-x" onclick="closeCheckout()">✕</button></div>
+    <div id="coBody"></div>
+    <div id="coFoot"></div>
+  </div>
+</div>
+
+<!-- GOLDEN MODAL -->
+<div class="modal-ov" id="goldenModal">
+  <div class="modal-box">
+    <div class="modal-hd gold-hd"><h3>⭐ Golden People Registration</h3><button class="modal-x" onclick="document.getElementById('goldenModal').classList.remove('open')">✕</button></div>
+    <div class="modal-body">
+      <div style="font-size:.78rem;color:var(--muted);margin-bottom:.95rem;background:var(--gold-l);border-radius:9px;padding:.62rem .85rem;border:1px solid var(--gold-bdr);line-height:1.68">Age 55+ only. Upload your Aadhaar card. Enter your Date of Birth — age is calculated instantly. Image is compressed &amp; stored securely.</div>
+      <div class="fg"><label class="fl">Full Name <span class="req">*</span></label><input class="fi" id="g_name" placeholder="As on Aadhaar"></div>
+      <div class="fg">
+        <label class="fl">Date of Birth <span class="req">*</span></label>
+        <input class="fi" id="g_dob" type="date" onchange="onDOBChange(this.value)">
+        <div id="ageResult" style="display:none;margin-top:.48rem">
+          <div class="age-disp" id="ageVal"></div>
+          <div style="font-size:.68rem;color:var(--muted);text-align:center;margin-bottom:.35rem">years old</div>
+          <div id="ageMsgBox"></div>
+        </div>
+      </div>
+      <div class="fg">
+        <label class="fl">Aadhaar Card Image <span class="req">*</span><span style="font-size:.65rem;color:var(--muted);margin-left:.25rem">— compressed &amp; stored securely</span></label>
+        <div class="adhaar-zone" id="adhaarZone">
+          <div style="font-size:1.75rem;margin-bottom:.32rem">📄</div>
+          <div style="font-size:.78rem;font-weight:500">Tap to upload Aadhaar</div>
+          <div style="font-size:.68rem;color:var(--muted);margin-top:.15rem">JPG, PNG · Compressed before saving</div>
+          <input type="file" id="adhaarFile" accept="image/jpeg,image/png,image/jpg">
+        </div>
+        <button class="cam-btn" onclick="useCam()">📷 Use Camera Instead</button>
+        <img id="adhaarPrev" class="adhaar-prev" style="display:none">
+        <div id="adhaarStatus" style="font-size:.7rem;color:var(--muted);margin-top:.32rem"></div>
+      </div>
+      <div id="gRegErr" style="color:#c0392b;font-size:.74rem;padding:.38rem;display:none"></div>
+    </div>
+    <div class="mft">
+      <button class="btn-s" onclick="document.getElementById('goldenModal').classList.remove('open')">Cancel</button>
+      <button class="btn-gold" onclick="submitGoldenReg()" style="flex:1;padding:.72rem;border-radius:10px;font-size:.84rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">Verify &amp; Register ⭐</button>
+    </div>
+  </div>
+</div>
+
+<!-- RATING MODAL -->
+<div class="modal-ov" id="ratingModal">
+  <div class="modal-box">
+    <div class="modal-hd"><h3>Rate &amp; Review</h3><button class="modal-x" onclick="document.getElementById('ratingModal').classList.remove('open')">✕</button></div>
+    <div class="modal-body">
+      <div class="fg"><label class="fl">Your Name</label><input class="fi" id="r_name" placeholder="Anonymous"></div>
+      <div class="fg"><label class="fl">Overall Rating <span class="req">*</span></label><div class="star-input" id="starInput"><span class="star" data-v="1">★</span><span class="star" data-v="2">★</span><span class="star" data-v="3">★</span><span class="star" data-v="4">★</span><span class="star" data-v="5">★</span></div></div>
+      <div class="fg"><label class="fl">Rate a specific item (optional)</label>
+        <select class="fi" id="r_item"><option value="">Overall Restaurant</option><option>Full Meals</option><option>Sambar Rice</option><option>Rasam Rice</option><option>Lemon Rice</option><option>Curd Rice</option><option>Special Curd Rice</option><option>Egg Omelette</option><option>Veg Salad</option><option>Fruit Salad</option><option>Millet Kanji</option></select>
+      </div>
+      <div class="fg"><label class="fl">Comment</label><textarea class="fi" id="r_comment" rows="3" placeholder="Tell us about your experience..."></textarea></div>
+    </div>
+    <div class="mft">
+      <button class="btn-s" onclick="document.getElementById('ratingModal').classList.remove('open')">Cancel</button>
+      <button class="btn-p" onclick="submitReview()">Submit Review</button>
+    </div>
+  </div>
+</div>
+
+<!-- CHATBOT -->
+<button class="chat-fab" id="chatFab" onclick="toggleChat()" title="Chat with Amma's Assistant">💬</button>
+<div class="chat-win" id="chatWin">
+  <div class="chat-hdr">
+    <div style="display:flex;align-items:center;gap:.52rem">
+      <div class="chat-av">🤖</div>
+      <div><div class="chat-nm">Amma's Assistant</div><div class="chat-st" id="chatSt">Online · Replies instantly</div></div>
+    </div>
+    <button class="chat-close" onclick="toggleChat()">✕</button>
+  </div>
+  <div class="chat-msgs" id="chatMsgs"></div>
+  <div class="chat-qrs" id="chatQRs"></div>
+  <div class="chat-inp-row">
+    <input class="chat-inp" id="chatInp" placeholder="Ask anything..." onkeydown="if(event.key==='Enter')sendChat()">
+    <button class="chat-send" onclick="sendChat()">➤</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="shared.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+/* ===================== MENU DATA ===================== */
+const MENU = {
+  breakfast: [
+    {id:'b1',name:'Veg Salad',desc:'Fresh seasonal vegetables with lemon & salt',price:40,emoji:'🥗',bg:'#F0FAF4',veg:true,badge:'veg',available:true,stars:4.8,cat:'Salad',prepMins:5},
+    {id:'b2',name:'Fruit Salad',desc:'Mixed seasonal fruits — banana, apple, papaya with honey',price:50,emoji:'🍎',bg:'#FFF5F0',veg:true,badge:'new',available:true,stars:4.9,cat:'Salad',prepMins:5},
+    {id:'b3',name:'Sprouts',desc:'Moong & mixed sprouts with coriander & light masala',price:45,emoji:'🌱',bg:'#F0FFF4',veg:true,badge:'veg',available:true,stars:4.7,cat:'Healthy',prepMins:8},
+    {id:'b4',name:'Millet Kanji',desc:'Nutritious kambu / ragi kanji — light morning porridge',price:55,emoji:'🫙',bg:'#FFF8EC',veg:true,badge:'new',available:true,stars:4.8,cat:'Porridge',prepMins:15},
+  ],
+  lunch: [
+    {id:'l1',name:'Full Meals',desc:'Rice, sambar, rasam, 2 curries, papad, pickle & curd',price:120,emoji:'🍽️',bg:'#FFF8EC',veg:true,badge:'hot',available:true,stars:5.0,cat:'Meals',prepMins:25},
+    {id:'l2',name:'Sambar Rice',desc:'Steamed rice with piping hot toor dal sambar & ghee',price:70,emoji:'🍲',bg:'#FFF3E8',veg:true,badge:'hot',available:true,stars:4.9,cat:'Rice',prepMins:20},
+    {id:'l3',name:'Rasam Rice',desc:'Tangy pepper rasam with soft steamed rice',price:60,emoji:'🍜',bg:'#FFF8F0',veg:true,badge:'veg',available:true,stars:4.8,cat:'Rice',prepMins:18},
+    {id:'l4',name:'Lemon Rice',desc:'Mustard, curry leaves, peanuts & fresh lemon',price:65,emoji:'🍋',bg:'#FFFCE8',veg:true,badge:'veg',available:true,stars:4.7,cat:'Rice',prepMins:15},
+    {id:'l5',name:'Turmeric Rice',desc:'Golden haldi rice with cashews & ghee',price:65,emoji:'🌾',bg:'#FFFBE8',veg:true,badge:'new',available:true,stars:4.6,cat:'Rice',prepMins:15},
+    {id:'l6',name:'Curd Rice',desc:'Thayir sadam with mustard, green chilli & pomegranate',price:60,emoji:'🥛',bg:'#F8F0FF',veg:true,badge:'veg',available:true,stars:4.9,cat:'Rice',prepMins:12},
+    {id:'l7',name:'Special Curd Rice',desc:"Chef's special — fruits, nuts, pomegranate & spiced tadka",price:80,emoji:'✨',bg:'#FFF0FB',veg:true,badge:'spl',available:true,stars:5.0,cat:'Special',prepMins:15},
+    {id:'l8',name:'Veg Salad',desc:'Fresh cut vegetables with lemon, rock salt & chaat masala',price:45,emoji:'🥗',bg:'#F0FAF4',veg:true,badge:'veg',available:true,stars:4.5,cat:'Salad',prepMins:5},
+    {id:'l9',name:'Egg Omelette',desc:'2-egg masala omelette with onion, tomato & coriander',price:55,emoji:'🍳',bg:'#FFF8E8',veg:false,badge:'new',available:true,stars:4.8,cat:'Egg',prepMins:10},
+    {id:'l10',name:'Boiled Eggs',desc:'2 hard boiled eggs with pepper & salt',price:30,emoji:'🥚',bg:'#FAFFF0',veg:false,badge:'veg',available:false,stars:4.6,cat:'Egg',prepMins:8},
+  ],
+  tmrBfst: [
+    {id:'tb1',name:'Veg Salad',desc:'Fresh garden vegetables with lemon dressing',price:40,emoji:'🥗',bg:'#F0FAF4',veg:true,badge:'tmr',available:true,stars:4.8,cat:'Salad',prepMins:5},
+    {id:'tb2',name:'Fruit Salad',desc:'Seasonal mixed fruits with honey & mint',price:50,emoji:'🍇',bg:'#FFF5F0',veg:true,badge:'tmr',available:true,stars:4.9,cat:'Salad',prepMins:5},
+    {id:'tb3',name:'Sprouts',desc:'Mixed sprouts with masala dressing',price:45,emoji:'🌱',bg:'#F0FFF4',veg:true,badge:'tmr',available:true,stars:4.7,cat:'Healthy',prepMins:8},
+    {id:'tb4',name:'Millet Kanji',desc:'Morning millet porridge — light & nutritious',price:55,emoji:'🫙',bg:'#FFF8EC',veg:true,badge:'tmr',available:true,stars:4.8,cat:'Porridge',prepMins:15},
+  ],
+  tmrLunch: [
+    {id:'tl1',name:'Full Meals',desc:'Complete South Indian thali',price:120,emoji:'🍽️',bg:'#FFF8EC',veg:true,badge:'tmr',available:true,stars:5.0,cat:'Meals',prepMins:25},
+    {id:'tl2',name:'Sambar Rice',desc:'Toor dal sambar with steamed rice',price:70,emoji:'🍲',bg:'#FFF3E8',veg:true,badge:'tmr',available:true,stars:4.9,cat:'Rice',prepMins:20},
+    {id:'tl3',name:'Rasam Rice',desc:'Pepper rasam with soft rice',price:60,emoji:'🍜',bg:'#FFF8F0',veg:true,badge:'tmr',available:true,stars:4.8,cat:'Rice',prepMins:18},
+    {id:'tl4',name:'White Rice & Rasam',desc:'Plain white rice with thin rasam',price:50,emoji:'🍚',bg:'#FFFFF0',veg:true,badge:'tmr',available:true,stars:4.7,cat:'Rice',prepMins:15},
+    {id:'tl5',name:'Special Meals',desc:'Premium full meals with extra side dishes',price:150,emoji:'🫕',bg:'#FFF0EC',veg:true,badge:'spl',available:true,stars:5.0,cat:'Special',prepMins:30},
+  ],
+  goldMorning: [
+    {id:'g1',name:'Millet Kanji',desc:'Kambu / ragi kanji — calcium-rich, easy to digest',price:60,emoji:'🫙',bg:'#FFF8EC',veg:true,badge:'gold',available:true,stars:4.9,cat:'Morning',prepMins:15,golden:true},
+    {id:'g2',name:'Soft Idli',desc:'Steamed idli with coconut chutney — gentle on digestion',price:50,emoji:'🫓',bg:'#FFFFF5',veg:true,badge:'gold',available:true,stars:4.8,cat:'Morning',prepMins:20,golden:true},
+    {id:'g3',name:'Veg Oatmeal',desc:'Warm savoury oatmeal with vegetables — heart-healthy',price:55,emoji:'🥣',bg:'#F5FFF5',veg:true,badge:'gold',available:true,stars:4.7,cat:'Morning',prepMins:12,golden:true},
+    {id:'g4',name:'Fruit Salad',desc:'Fresh seasonal fruits — vitamins & natural energy',price:50,emoji:'🍎',bg:'#FFF5F0',veg:true,badge:'gold',available:true,stars:4.9,cat:'Morning',prepMins:5,golden:true},
+  ],
+  goldLunch: [
+    {id:'g5',name:'White Rice & Rasam',desc:'Easily digestible rice with light pepper rasam',price:55,emoji:'🍚',bg:'#FFFFF0',veg:true,badge:'gold',available:true,stars:4.9,cat:'Lunch',prepMins:15,golden:true},
+    {id:'g6',name:'Soft Full Meals',desc:'Low-spice, soft-cooked thali — designed for seniors',price:100,emoji:'🍽️',bg:'#F5FFF0',veg:true,badge:'gold',available:true,stars:5.0,cat:'Meals',prepMins:25,golden:true},
+    {id:'g7',name:'Curd Rice',desc:'Light thayir sadam — probiotic & cooling',price:55,emoji:'🥛',bg:'#F8F0FF',veg:true,badge:'gold',available:true,stars:4.9,cat:'Rice',prepMins:12,golden:true},
+    {id:'g8',name:'Steamed Vegetables',desc:'Lightly steamed mixed vegetables — minimal oil & spice',price:65,emoji:'🥦',bg:'#F0FFF4',veg:true,badge:'gold',available:true,stars:4.7,cat:'Healthy',prepMins:15,golden:true},
+    {id:'g9',name:'Special Golden Meals',desc:'Premium senior-friendly thali — low oil, high nutrition',price:130,emoji:'⭐',bg:'#FFF9E0',veg:true,badge:'gold',available:true,stars:5.0,cat:'Special',prepMins:30,golden:true},
+    {id:'g10',name:'Lemon Rice',desc:'Light lemon rice — easy on the stomach',price:60,emoji:'🍋',bg:'#FFFCE8',veg:true,badge:'gold',available:true,stars:4.7,cat:'Rice',prepMins:15,golden:true},
+  ],
+};
+
+function applyOverrides() {
+  const ov = getMenuOverrides();
+  Object.values(MENU).flat().forEach(item => { if (ov[item.id]) Object.assign(item, ov[item.id]); });
+}
+applyOverrides();
+
+/* ===================== CART ===================== */
+let cart = {};
+let goldenUser = DB.get('golden_user', null);
+
+function allItems() { return Object.values(MENU).flat(); }
+function getItem(id) { return allItems().find(i => i.id === id); }
+function effPrice(item) {
+  if (!item) return 0;
+  if (goldenUser) {
+    const disc = Cfg.get('goldenDiscount', 10) / 100;
+    return Math.round(item.price * (1 - disc));
+  }
+  return item.price;
+}
+
+function addToCart(id) {
+  const item = getItem(id); if (!item || !item.available) return;
+  cart[id] = (cart[id] || 0) + 1;
+  updateCartUI(); refreshCardQty(id); showToast('Added to cart 🎉');
+  const cnt = document.getElementById('cartCnt');
+  cnt.classList.remove('pop'); requestAnimationFrame(() => cnt.classList.add('pop'));
+}
+function changeQty(id, delta) {
+  cart[id] = (cart[id] || 0) + delta;
+  if (cart[id] <= 0) delete cart[id];
+  updateCartUI(); refreshCardQty(id);
+}
+function refreshCardQty(id) {
+  document.querySelectorAll(`[data-id="${id}"] .qty-area`).forEach(el => {
+    const q = cart[id] || 0;
+    el.innerHTML = q === 0
+      ? `<button class="add-btn" onclick="addToCart('${id}')">+</button>`
+      : `<div class="qty-ctrl"><button class="qty-btn" onclick="changeQty('${id}',-1)">−</button><span class="qty-num">${q}</span><button class="qty-btn" onclick="changeQty('${id}',1)">+</button></div>`;
+  });
+}
+function cartTotal() { return Object.entries(cart).reduce((s, [id, q]) => s + effPrice(getItem(id)) * q, 0); }
+function cartCount() { return Object.values(cart).reduce((s, q) => s + q, 0); }
+
+function updateCartUI() {
+  const count = cartCount(), total = cartTotal();
+  document.getElementById('cartCnt').textContent = count;
+  document.getElementById('cartTotalDisp').textContent = '₹' + total;
+  document.getElementById('checkoutBtn').disabled = count === 0;
+  const list = document.getElementById('cartList');
+  if (count === 0) {
+    list.innerHTML = `<div class="cart-empty"><div style="font-size:2.3rem;margin-bottom:.68rem;opacity:.3">🍽️</div><div style="font-size:.83rem;font-weight:500">Your cart is empty</div><div style="font-size:.71rem;margin-top:.26rem;color:var(--muted)">Add items to get started!</div></div>`;
+    return;
+  }
+  list.innerHTML = Object.entries(cart).map(([id, q]) => {
+    const item = getItem(id); if (!item) return '';
+    const p = effPrice(item);
+    return `<div class="ci">
+      <div class="ci-thumb" style="background:${item.image ? '' : item.bg}">${item.image ? `<img src="${item.image}" alt="">` : item.emoji}</div>
+      <div style="flex:1;min-width:0"><div class="ci-name">${item.name}</div><div class="ci-price">₹${p} × ${q} = ₹${p * q}</div></div>
+      <div class="ci-qty"><button class="qty-btn" onclick="changeQty('${id}',-1)">−</button><span class="qty-num">${q}</span><button class="qty-btn" onclick="changeQty('${id}',1)">+</button></div>
+    </div>`;
+  }).join('');
+}
+
+/* ===================== RENDER CARDS ===================== */
+function renderCards(items, gridId) {
+  const grid = document.getElementById(gridId); if (!grid) return;
+  const bmap = {hot:['fb-hot','🔥 Popular'],new:['fb-new','✦ New'],spl:['fb-spl','⭐ Special'],veg:['fb-veg','Veg'],tmr:['fb-tmr','📅 Pre-Book'],gold:['fb-gold','⭐ Golden']};
+  grid.innerHTML = items.map(item => {
+    const [bc, bt] = bmap[item.badge] || ['fb-veg', 'Veg'];
+    const stars = '★'.repeat(Math.floor(item.stars)) + (item.stars % 1 ? '½' : '');
+    const sold = !item.available;
+    const p = effPrice(item); const showDisc = goldenUser && p !== item.price;
+    const visual = item.image ? `<img class="food-img-real" src="${item.image}" alt="">` : `<span class="food-emoji">${item.emoji}</span><div class="fd-shadow"></div>`;
+    return `<div class="food-card${sold ? ' sold-out' : ''}${item.golden ? ' gold-card' : ''}" data-id="${item.id}">
+      <div class="food-visual" style="${item.image ? '' : 'background:' + item.bg}">
+        ${visual}<span class="fd-badge ${bc}">${bt}</span>
+        ${sold ? '<div class="sold-over"><div class="sold-tag">Not Available</div></div>' : ''}
+      </div>
+      <div class="food-info">
+        <div class="food-stars">${stars}<span class="star-ct">(${Math.floor(item.stars * 10)})</span></div>
+        <div class="food-name"><span class="veg-dot ${item.veg ? 'veg' : 'nonveg'}"></span>${item.name}</div>
+        <div class="food-cat">${item.cat}</div>
+        <div class="food-desc">${item.desc}</div>
+        <div class="food-foot">
+          <div class="food-price">₹${p}${showDisc ? `<span class="orig-price">₹${item.price}</span>` : ''}<small>per serving</small></div>
+          <div class="qty-area">${!sold ? `<button class="add-btn" onclick="addToCart('${item.id}')">+</button>` : '<span style="font-size:.65rem;color:#aaa">Unavail.</span>'}</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderAllMenus() {
+  applyOverrides();
+  renderCards(MENU.breakfast, 'grid-bfst');
+  renderCards(MENU.lunch, 'grid-lunch');
+  renderCards(MENU.tmrBfst, 'grid-tmr-bfst');
+  renderCards(MENU.tmrLunch, 'grid-tmr-lunch');
+  renderCards(MENU.goldMorning, 'grid-gold-morning');
+  renderCards(MENU.goldLunch, 'grid-gold-lunch');
+}
+
+/* ===================== TABS ===================== */
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-panel').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  if (btn) btn.classList.add('active');
+}
+
+/* ===================== CART OPEN/CLOSE ===================== */
+function openCart()  { document.getElementById('cartOv').classList.add('open'); document.body.style.overflow = 'hidden'; }
+function closeCart() { document.getElementById('cartOv').classList.remove('open'); document.body.style.overflow = ''; }
+
+/* ===================== CHECKOUT ===================== */
+let oSt = { step:1, customer:{}, loc:{}, txn:'', orderId:'' };
+let leafMap = null, leafMarker = null;
+
+function startCheckout() { closeCart(); document.getElementById('checkoutModal').classList.add('open'); document.body.style.overflow = 'hidden'; renderCO(1); }
+function closeCheckout() {
+  document.getElementById('checkoutModal').classList.remove('open');
+  document.body.style.overflow = '';
+  if (leafMap) { leafMap.remove(); leafMap = null; }
+}
+
+function stepsHtml(cur) {
+  const labels = ['Details', 'Location', 'Payment', 'Done'];
+  return `<div class="steps-bar">${labels.map((l, i) => `<div class="si ${i+1===cur?'active':i+1<cur?'done':''}"><div class="si-circ">${i+1<cur?'✓':i+1}</div><div class="si-lbl">${l}</div></div>`).join('')}</div>`;
+}
+
+function renderCO(step) {
+  oSt.step = step;
+  const titles = ['Your Details', 'Delivery Location', 'UPI Payment', 'Order Confirmed!'];
+  document.getElementById('coTitle').textContent = titles[step - 1];
+  if (step === 1) rStep1();
+  else if (step === 2) rStep2();
+  else if (step === 3) rStep3();
+  else rStep4();
+}
+
+/* ── Step 1: Details ── */
+function rStep1() {
+  const c = oSt.customer;
+  document.getElementById('coBody').innerHTML = `<div class="modal-body">${stepsHtml(1)}
+    <div class="frow">
+      <div class="fg"><label class="fl">Full Name <span class="req">*</span></label><input class="fi" id="s1n" value="${c.name||''}" placeholder="Your full name"></div>
+      <div class="fg"><label class="fl">Mobile <span class="req">*</span></label><input class="fi" id="s1m" type="tel" value="${c.mobile||''}" placeholder="10-digit number"></div>
+    </div>
+    <div class="fg"><label class="fl">WhatsApp <span class="req">*</span></label>
+      <input class="fi" id="s1w" type="tel" value="${c.whatsapp||''}" placeholder="10-digit WhatsApp number">
+      <label style="display:flex;align-items:center;gap:.36rem;margin-top:.36rem;font-size:.7rem;color:var(--muted);cursor:pointer"><input type="checkbox" id="waSame" style="accent-color:var(--sf)" onchange="if(this.checked)document.getElementById('s1w').value=document.getElementById('s1m').value"> Same as mobile number</label>
+    </div>
+    <div class="fg"><label class="fl">Email Address <span class="req">*</span><span style="font-size:.65rem;color:var(--muted);margin-left:.26rem">— order confirmation sent here</span></label>
+      <input class="fi" id="s1e" type="email" value="${c.email||''}" placeholder="yourname@email.com"></div>
+  </div>`;
+  document.getElementById('coFoot').innerHTML = `<div class="mft"><button class="btn-s" onclick="closeCheckout()">Cancel</button><button class="btn-p" onclick="subS1()">Next: Location →</button></div>`;
+}
+function subS1() {
+  const name = document.getElementById('s1n').value.trim();
+  const mobile = document.getElementById('s1m').value.replace(/\D/g,'').slice(-10);
+  const wa = document.getElementById('s1w').value.replace(/\D/g,'').slice(-10) || mobile;
+  const email = document.getElementById('s1e').value.trim();
+  if (!name)                          { showToast('Please enter your name ⚠️'); return; }
+  if (mobile.length !== 10)           { showToast('Enter valid 10-digit mobile ⚠️'); return; }
+  if (!email || !email.includes('@')) { showToast('Valid email required ⚠️'); return; }
+  oSt.customer = { name, mobile: '+91' + mobile, whatsapp: '+91' + wa, email };
+  renderCO(2);
+}
+
+/* ── Step 2: Location ── */
+function rStep2() {
+  document.getElementById('coBody').innerHTML = `<div class="modal-body">${stepsHtml(2)}
+    <div class="fg"><label class="fl">Full Delivery Address <span class="req">*</span></label>
+      <textarea class="fi" id="s2a" rows="2" placeholder="House no., Street, Area, Landmark">${oSt.customer.address||''}</textarea></div>
+    <div class="fg"><label class="fl">Pin Location on Map <span class="req">*</span></label>
+      <div class="map-sw"><span class="map-sw-icon">🔍</span><input class="fi msrch" id="mapSrch" placeholder="Search area or address..." oninput="debGeo(this.value)"></div>
+      <div id="cMap"></div>
+      <div class="loc-ok" id="locOk"></div>
+      <div style="font-size:.67rem;color:var(--muted);margin-top:.36rem">Click map to pin your location, or search above</div>
+    </div>
+    <div class="fg"><label class="fl">Special Instructions</label>
+      <input class="fi" id="s2n" placeholder="Allergies, gate number, landmark..." value="${oSt.customer.notes||''}"></div>
+  </div>`;
+  document.getElementById('coFoot').innerHTML = `<div class="mft"><button class="btn-s" onclick="renderCO(1)">← Back</button><button class="btn-p" onclick="subS2()">Next: Payment →</button></div>`;
+  if (oSt.loc.address) {
+    document.getElementById('s2a').value = oSt.loc.address;
+    document.getElementById('mapSrch').value = oSt.loc.address;
+    showLocResult(oSt.loc.lat, oSt.loc.lng, oSt.loc.address);
+  }
+  setTimeout(initLeafMap, 200);
+}
+
+let geoTimer;
+function debGeo(v) { clearTimeout(geoTimer); geoTimer = setTimeout(() => geocode(v), 650); }
+function initLeafMap() {
+  const el = document.getElementById('cMap'); if (!el) return;
+  if (leafMap) { leafMap.remove(); leafMap = null; }
+  const sLat = Cfg.get('senderLat', 9.91918526788082), sLng = Cfg.get('senderLng', 78.09422025024031);
+  const lat = oSt.loc.lat || sLat, lng = oSt.loc.lng || sLng;
+  leafMap = L.map('cMap').setView([lat, lng], 13);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(leafMap);
+  if (oSt.loc.lat) { leafMarker = L.marker([lat, lng]).addTo(leafMap).bindPopup('📍 Your location').openPopup(); }
+  leafMap.on('click', e => {
+    const { lat, lng } = e.latlng;
+    if (leafMarker) leafMarker.setLatLng([lat, lng]); else leafMarker = L.marker([lat, lng]).addTo(leafMap);
+    leafMarker.bindPopup('📍 Your delivery location').openPopup();
+    revGeo(lat, lng);
+  });
+}
+function geocode(q) {
+  if (!q || q.length < 3) return;
+  fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=1&countrycodes=in`)
+    .then(r => r.json()).then(d => {
+      if (d && d[0]) {
+        const lt = parseFloat(d[0].lat), lg = parseFloat(d[0].lon);
+        leafMap?.setView([lt, lg], 15);
+        if (leafMarker) leafMarker.setLatLng([lt, lg]); else leafMarker = L.marker([lt, lg]).addTo(leafMap);
+        leafMarker.bindPopup('📍 ' + d[0].display_name.substring(0, 40)).openPopup();
+        showLocResult(lt, lg, d[0].display_name);
+      }
+    }).catch(() => {});
+}
+function revGeo(lat, lng) {
+  fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`)
+    .then(r => r.json()).then(d => showLocResult(lat, lng, d.display_name || 'Selected location'))
+    .catch(() => showLocResult(lat, lng, 'Selected location'));
+}
+function showLocResult(lat, lng, addr) {
+  const sLat = Cfg.get('senderLat', 9.91918526788082), sLng = Cfg.get('senderLng', 78.09422025024031);
+  const distKm = haversine(sLat, sLng, lat, lng);
+  const eta = calcETA(distKm);
+  oSt.loc = { lat, lng, address: addr, dist: eta.dist, eta };
+  const el = document.getElementById('locOk');
+  if (el) {
+    el.style.display = 'block';
+    el.innerHTML = `📍 <strong>${addr.substring(0, 55)}...</strong><br>⏱ Prep: <strong>${eta.prep} min</strong> + Delivery: <strong>${eta.delivery} min</strong> = <strong>~${eta.total} min total</strong>`;
+  }
+  const addrEl = document.getElementById('s2a');
+  if (addrEl && !addrEl.value) addrEl.value = addr.substring(0, 120);
+}
+function subS2() {
+  const addr = document.getElementById('s2a').value.trim();
+  if (!addr)               { showToast('Enter delivery address ⚠️'); return; }
+  if (!oSt.loc.lat)        { showToast('Pin your location on the map ⚠️'); return; }
+  oSt.customer.address = addr;
+  oSt.customer.notes   = document.getElementById('s2n').value.trim();
+  if (leafMap) { leafMap.remove(); leafMap = null; }
+  renderCO(3);
+}
+
+/* ── Step 3: Payment ── */
+function rStep3() {
+  const total = cartTotal();
+  const itemsHtml = Object.entries(cart).map(([id, q]) => { const item = getItem(id); return item ? `<div class="osum-row"><span>${item.name} ×${q}</span><span>₹${effPrice(item)*q}</span></div>` : ''; }).join('');
+  const upiQR = DB.get('upi_qr', ''), upiId = Cfg.get('upiId', 'ammaskitchen@upi');
+  document.getElementById('coBody').innerHTML = `<div class="modal-body">${stepsHtml(3)}
+    <div class="osum"><div class="osum-ttl">Order Summary</div>${itemsHtml}<div class="osum-total"><span>Total to Pay</span><span>₹${total}</span></div></div>
+    <div style="text-align:center">
+      <div class="upi-qr-box">${upiQR ? `<img src="${upiQR}" alt="UPI QR">` : `<div class="upi-qr-ph"><div style="font-size:2.3rem">📱</div><div style="font-size:.68rem;margin-top:.26rem">Set QR in admin panel</div></div>`}</div>
+      <div class="upi-id-row"><span>UPI ID: <strong>${upiId}</strong></span><button class="copy-btn" onclick="navigator.clipboard?.writeText('${upiId}');showToast('UPI ID copied! 📋')">Copy</button></div>
+      <div class="upi-steps">
+        <div class="us"><div class="us-n">1</div>Open GPay, PhonePe, Paytm or BHIM</div>
+        <div class="us"><div class="us-n">2</div>Scan QR or enter UPI ID</div>
+        <div class="us"><div class="us-n">3</div>Pay exactly <strong>₹${total}</strong></div>
+        <div class="us"><div class="us-n">4</div>Enter your Transaction / UTR ID below</div>
+      </div>
+      <div class="fg">
+        <label class="fl">Transaction / UTR ID <span class="req">*</span></label>
+        <input class="fi" id="s3txn" placeholder="12-digit Transaction ID" style="text-align:center;font-weight:600;letter-spacing:.06em">
+        <div style="font-size:.65rem;color:var(--muted);margin-top:.26rem">Found in your UPI app under payment history</div>
+      </div>
+      <div style="background:var(--sf-l);border:1px solid rgba(232,98,10,.18);border-radius:9px;padding:.55rem .8rem;font-size:.71rem;color:var(--sf-d)">⚠️ If we cannot process your order, a full refund will be initiated and you will be notified on your mobile.</div>
+    </div>
+  </div>`;
+  document.getElementById('coFoot').innerHTML = `<div class="mft"><button class="btn-s" onclick="renderCO(2)">← Back</button><button class="btn-p" onclick="subS3()">Confirm Order →</button></div>`;
+}
+function subS3() {
+  const txn = document.getElementById('s3txn').value.trim();
+  if (!txn || txn.length < 8) { showToast('Enter valid Transaction ID ⚠️'); return; }
+  oSt.txn = txn;
+  oSt.orderId = 'AK' + Date.now().toString().slice(-8);
+  persistOrder();
+  renderCO(4);
+}
+function persistOrder() {
+  const total = cartTotal();
+  const items = Object.entries(cart).map(([id, q]) => ({ id, name: getItem(id)?.name, qty: q, price: effPrice(getItem(id)) }));
+  const order = { orderId: oSt.orderId, date: new Date().toLocaleString('en-IN'), customer: oSt.customer, loc: oSt.loc, items, total, txnId: oSt.txn, status: 'Pending', isGolden: !!goldenUser };
+  upsertOrder(order);
+  const sheetsUrl = Cfg.get('sheetsUrl', '');
+  if (sheetsUrl) fetch(sheetsUrl, { method: 'POST', body: JSON.stringify(order), headers: { 'Content-Type': 'application/json' } }).catch(() => {});
+}
+
+/* ── Step 4: Confirmation ── */
+function rStep4() {
+  const total = cartTotal(), eta = oSt.loc.eta || { prep:25, delivery:20, total:45 };
+  document.getElementById('coBody').innerHTML = `<div class="modal-body">
+    <div class="conf-wrap">
+      <span class="conf-icon">✅</span>
+      <div class="conf-title">Order Received!</div>
+      <div class="conf-sub">Thank you, <strong>${oSt.customer.name}</strong>! Your meal is being freshly prepared.</div>
+      <div class="conf-detail">
+        <div class="cdr"><span>Order ID</span><span style="color:var(--sf-d)">#${oSt.orderId}</span></div>
+        <div class="cdr"><span>Amount Paid</span><span>₹${total}</span></div>
+        <div class="cdr"><span>Transaction ID</span><span>#${oSt.txn}</span></div>
+        <div class="cdr"><span>Estimated Time</span><span style="color:var(--gr);font-weight:600">~${eta.total} mins total</span></div>
+        <div class="cdr"><span>Preparation</span><span>~${eta.prep} mins</span></div>
+        <div class="cdr"><span>Delivery</span><span>~${eta.delivery} mins</span></div>
+      </div>
+      <a class="track-btn" href="tracking.html?order=${oSt.orderId}" target="_blank">🗺️ Track Your Order Live</a>
+      <div style="font-size:.74rem;color:var(--muted);margin-bottom:.5rem">Confirmation sent to:</div>
+      <div class="nchips"><span class="nchip">📧 ${oSt.customer.email}</span><span class="nchip">📱 SMS</span></div>
+    </div>
+  </div>`;
+  document.getElementById('coFoot').innerHTML = `<div class="mft"><button class="btn-p" onclick="closeCheckout();resetCart()">Done 🎉</button></div>`;
+  Object.keys(cart).forEach(id => refreshCardQty(id));
+}
+function resetCart() { cart = {}; updateCartUI(); }
+
+/* ===================== GOLDEN PEOPLE ===================== */
+function openGoldenModal() {
+  if (goldenUser) { showToast(`Welcome back, ${goldenUser.name}! ⭐`); switchTab('golden', document.getElementById('tBtn-golden')); return; }
+  document.getElementById('goldenModal').classList.add('open');
+}
+
+function useCam() {
+  const fi = document.getElementById('adhaarFile');
+  fi.setAttribute('capture', 'environment');
+  fi.click();
+}
+
+let adhaarData = null;
+document.addEventListener('DOMContentLoaded', () => {
+  // Aadhaar file input
+  const fi = document.getElementById('adhaarFile');
+  if (fi) fi.addEventListener('change', async e => {
+    const file = e.target.files[0]; if (!file) return;
+    const status = document.getElementById('adhaarStatus');
+    status.textContent = 'Compressing image…';
+    try {
+      adhaarData = await compressImage(file, 700, 0.68);
+      document.getElementById('adhaarPrev').src = adhaarData;
+      document.getElementById('adhaarPrev').style.display = 'block';
+      const sizekb = Math.round(adhaarData.length * 0.75 / 1024);
+      status.textContent = `✅ Compressed (${sizekb} KB) — stored securely`;
+      status.style.color = 'var(--gr)';
+    } catch { status.textContent = 'Failed to process image — try again'; }
+
+    /* ── OCR: HIDDEN — reserved for future activation ──────────────────
+     * When enabled, this will extract DOB text from the Aadhaar image
+     * and cross-verify with the manually entered DOB field.
+     *
+     * Implementation plan (commented out intentionally):
+     *
+     * Step 1 — Load Tesseract.js
+     * const s = document.createElement('script');
+     * s.src = 'https://unpkg.com/tesseract.js@4/dist/tesseract.min.js';
+     * s.onload = () => runOCR(adhaarData);
+     * document.head.appendChild(s);
+     *
+     * Step 2 — OCR function (activate when ready)
+     * function runOCR(imgData) {
+     *   Tesseract.recognize(imgData, 'eng+hin')
+     *     .then(({ data: { text } }) => {
+     *       // Extract DOB pattern DD/MM/YYYY or DD-MM-YYYY
+     *       const match = text.match(/(\d{2})[\/\-](\d{2})[\/\-](\d{4})/);
+     *       if (match) {
+     *         const [, d, m, y] = match;
+     *         const ocrDob = `${y}-${m}-${d}`;  // ISO format for comparison
+     *         const enteredDob = document.getElementById('g_dob').value;
+     *         if (enteredDob && enteredDob === ocrDob) {
+     *           document.getElementById('adhaarStatus').textContent += ' · ✅ DOB verified via Aadhaar';
+     *         } else if (match) {
+     *           document.getElementById('adhaarStatus').textContent += ` · ⚠️ OCR DOB: ${d}/${m}/${y} — please verify`;
+     *         }
+     *       }
+     *     })
+     *     .catch(err => console.warn('OCR failed:', err));
+     * }
+     * ────────────────────────────────────────────────────────────────── */
+  });
+  // Star ratings
+  document.querySelectorAll('.star-input .star').forEach(star => {
+    star.addEventListener('click', () => setRating(parseInt(star.dataset.v)));
+    star.addEventListener('mouseover', () => hlStars(parseInt(star.dataset.v)));
+    star.addEventListener('mouseout', () => hlStars(currentRating));
+  });
+});
+
+function onDOBChange(dob) {
+  const age = ageFromDOB(dob);
+  const resEl = document.getElementById('ageResult'); if (!resEl) return;
+  if (age === null) { resEl.style.display = 'none'; return; }
+  resEl.style.display = 'block';
+  document.getElementById('ageVal').textContent = age;
+  const minAge = Cfg.get('goldenMinAge', 55);
+  const msgBox = document.getElementById('ageMsgBox');
+  msgBox.innerHTML = age >= minAge
+    ? `<div class="age-ok">✅ Age ${age} — Eligible for Golden People!</div>`
+    : `<div class="age-fail">❌ Age ${age} — Minimum age required: ${minAge}</div>`;
+}
+
+function submitGoldenReg() {
+  const name   = document.getElementById('g_name').value.trim();
+  const dob    = document.getElementById('g_dob').value;
+  const errEl  = document.getElementById('gRegErr');
+  errEl.style.display = 'none';
+  if (!name)        { errEl.style.display='block'; errEl.textContent='Please enter your full name'; return; }
+  if (!dob)         { errEl.style.display='block'; errEl.textContent='Please enter your date of birth'; return; }
+  if (!adhaarData)  { errEl.style.display='block'; errEl.textContent='Please upload your Aadhaar card image'; return; }
+  const age = ageFromDOB(dob);
+  const minAge = Cfg.get('goldenMinAge', 55);
+  if (age === null || age < minAge) {
+    errEl.style.display='block'; errEl.textContent=`Age ${age} — minimum age required: ${minAge}`;
+    return;
+  }
+  goldenUser = { name, dob, age, aadhaarImg: adhaarData, registeredAt: new Date().toISOString() };
+  DB.set('golden_user', goldenUser);
+  addGoldenUser({ name, dob, age, registeredAt: goldenUser.registeredAt });
+  document.getElementById('goldenModal').classList.remove('open');
+  adhaarData = null;
+  updateGoldenUI(); renderAllMenus();
+  showToast(`Welcome to Golden People, ${name}! ⭐ (Age ${age})`);
+  setTimeout(() => switchTab('golden', document.getElementById('tBtn-golden')), 500);
+}
+
+function updateGoldenUI() {
+  if (!goldenUser) return;
+  const disc = Cfg.get('goldenDiscount', 10);
+  // Golden menu section
+  document.getElementById('gold-gate').innerHTML = `
+    <div class="sec"><div class="gold-welcome-bar">
+      <div style="font-size:1.85rem">⭐</div>
+      <div style="flex:1">
+        <div style="font-weight:500;font-size:.92rem;color:var(--gold)">Welcome, ${goldenUser.name}! (Age ${goldenUser.age})</div>
+        <div style="font-size:.74rem;color:var(--muted);margin-top:.1rem">${disc}% Golden Discount applied on all items</div>
+      </div>
+      <div class="gwb-disc">${disc}% OFF</div>
+    </div></div>`;
+  document.getElementById('gold-menu').style.display = 'block';
+  document.getElementById('ghBadge').textContent = `⭐ ${disc}% Golden Discount Active!`;
+  // Show golden tab & hide login button
+  document.getElementById('tBtn-golden').style.display = '';
+  document.getElementById('goldenFab').style.display = 'none';
+}
+
+/* ===================== RATINGS ===================== */
+let currentRating = 0;
+function openRatingModal() { document.getElementById('ratingModal').classList.add('open'); }
+function setRating(n) { currentRating = n; hlStars(n); }
+function hlStars(n) { document.querySelectorAll('.star-input .star').forEach((s, i) => s.classList.toggle('lit', i < n)); }
+function submitReview() {
+  const name = document.getElementById('r_name').value.trim() || 'Anonymous';
+  const comment = document.getElementById('r_comment').value.trim();
+  const item = document.getElementById('r_item').value;
+  if (!currentRating) { showToast('Please select a star rating ⚠️'); return; }
+  const reviews = DB.get('reviews', []);
+  reviews.unshift({ name, rating: currentRating, comment, item, date: new Date().toLocaleDateString('en-IN') });
+  DB.set('reviews', reviews);
+  document.getElementById('ratingModal').classList.remove('open');
+  renderReviews(); showToast('Review submitted! Thank you 🙏');
+  currentRating = 0; hlStars(0);
+  document.getElementById('r_name').value = '';
+  document.getElementById('r_comment').value = '';
+}
+function renderReviews() {
+  const reviews = DB.get('reviews', []);
+  const cols = ['#FFE4CC','#C8E6C9','#BBDEFB','#F8BBD0','#E1BEE7','#FFECB3'];
+  const sumEl = document.getElementById('rSummary');
+  if (reviews.length) {
+    const avg = (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1);
+    sumEl.innerHTML = `<div class="r-sum"><div class="r-big">${avg}</div><div><div class="r-stars-big">${'★'.repeat(Math.round(avg))}${'☆'.repeat(5-Math.round(avg))}</div><div class="r-cnt">${reviews.length} review${reviews.length!==1?'s':''}</div></div></div>`;
+  } else { sumEl.innerHTML = ''; }
+  const grid = document.getElementById('rGrid');
+  if (!reviews.length) { grid.innerHTML='<div style="color:var(--muted);font-size:.8rem">No reviews yet — be the first! 🙏</div>'; return; }
+  grid.innerHTML = reviews.map((r,i) => `<div class="r-card">
+    <div class="r-row"><div class="r-av" style="background:${cols[i%6]};color:#333">${r.name[0]?.toUpperCase()}</div>
+    <div><div class="r-name">${r.name}</div><div class="r-date">${r.date}</div></div>
+    <div class="r-stars" style="margin-left:auto">${'★'.repeat(r.rating)}</div></div>
+    ${r.item ? `<div class="r-item-tag">🍽️ ${r.item}</div>` : ''}
+    <div class="r-comment">${r.comment || 'No comment'}</div>
+  </div>`).join('');
+}
+
+/* ===================== TICKER ===================== */
+function renderTicker() {
+  const offers = DB.get('offers', [
+    {text:'Order above ₹150 — FREE Curd Rice',active:true},
+    {text:'Special Curd Rice now available!',active:true},
+    {text:'Order by 11 AM for same-day lunch',active:true},
+    {text:'Golden People 55+ — Health menu & discounts!',active:true},
+  ]).filter(o => o.active !== false);
+  const html = offers.map(o => `<span class="ti"><span class="ti-pill">OFFER</span> ${o.text}</span>`).join('');
+  const el = document.getElementById('tickerTrack');
+  el.innerHTML = html + html; // duplicate for seamless loop
+}
+
+/* ===================== CHATBOT ===================== */
+let chatOpen = false;
+const QUICK = ['Menu','My Order','Timings','Offers','Golden People','Delivery','Payment','Tracking','FAQs'];
+const BOT_KEYS = {
+  'menu': () => {
+    const avail = MENU.lunch.filter(i => i.available).map(i => `${i.emoji} ${i.name} — ₹${i.price}`).join('\n');
+    return `Today's Lunch:\n${avail}\n\nBreakfast: Veg Salad (₹40), Fruit Salad (₹50), Sprouts (₹45), Millet Kanji (₹55)\n\nUse + on any card to add to cart.`;
+  },
+  'my order': () => {
+    const orders = getOrders();
+    if (!orders.length) return "No orders found. Place your first order from the menu!";
+    const last = orders[0];
+    return `Last Order: #${last.orderId}\nStatus: ${last.status}\nTotal: ₹${last.total}\nDate: ${last.date}\n\nTrack: tracking.html?order=${last.orderId}`;
+  },
+  'order status': () => {
+    const orders = getOrders();
+    if (!orders.length) return "No orders found.";
+    const last = orders[0];
+    return `Order #${last.orderId}: ${last.status}`;
+  },
+  'timings': () => `🕐 Order Timings:\n• Breakfast: 7:00 – 10:00 AM\n• Lunch: 12:00 – 3:00 PM\n• Same-day lunch cutoff: 11 AM\n\nPre-book tomorrow's meal anytime!`,
+  'offers': () => {
+    const active = DB.get('offers',[]).filter(o=>o.active!==false);
+    return active.length ? `🎉 Current Offers:\n${active.map(o=>`• ${o.text}`).join('\n')}` : "No special offers right now — check the menu banner!";
+  },
+  'golden': () => `⭐ Golden People — for senior citizens aged 55+\n\nBenefits:\n• ${Cfg.get('goldenDiscount',10)}% discount on all items\n• Health-focused meals: low spice, high nutrition\n• Priority care\n\nRegister using the ⭐ Golden tab at the top!`,
+  'delivery': () => `🛵 Delivery Info:\n• Up to ${Cfg.get('maxRadius',5)} km from our kitchen\n• ETA = Prep time + Travel time\n• Exact estimate shown at checkout\n\nFull refund if order can't be processed.`,
+  'payment': () => `💳 UPI Payment Only\nGPay, PhonePe, Paytm, BHIM\n\n1. Scan QR or enter UPI ID\n2. Pay exact amount\n3. Enter Transaction ID\n4. Order confirmed!`,
+  'tracking': () => {
+    const last = getOrders()[0];
+    return last ? `🗺️ Track your order:\ntracking.html?order=${last.orderId}\n\nCurrent status: ${last.status}` : `🗺️ After placing an order, you'll get a live tracking link.`;
+  },
+  'eta': () => {
+    const last = getOrders()[0];
+    if (last?.loc?.eta) return `⏱ Estimated Time for your last order:\nPrep: ~${last.loc.eta.prep} min\nDelivery: ~${last.loc.eta.delivery} min\nTotal: ~${last.loc.eta.total} min`;
+    return `Your estimated delivery time is shown at checkout based on your location.`;
+  },
+  'faqs': () => `❓ FAQs:\n\nQ: Is the food fresh?\nA: Yes! Cooked fresh every morning — no preservatives.\n\nQ: Can I cancel?\nA: Contact us immediately for a full refund.\n\nQ: Vegetarian options?\nA: Yes! Most items are pure vegetarian.\n\nQ: Cash payment?\nA: UPI only for now.`,
+};
+
+function toggleChat() {
+  chatOpen = !chatOpen;
+  document.getElementById('chatWin').classList.toggle('open', chatOpen);
+  if (chatOpen && document.getElementById('chatMsgs').children.length === 0) initChat();
+}
+function initChat() {
+  const greeting = goldenUser
+    ? `Vanakkam, ${goldenUser.name}! 🙏⭐\nAs a Golden People member, you have special benefits!\nHow can I help you today?`
+    : `Vanakkam! 🙏 I'm Amma's Kitchen assistant.\nHow can I help you today?`;
+  addBotMsg(greeting);
+  renderQRs();
+}
+function addBotMsg(text) {
+  const el = document.getElementById('chatMsgs');
+  const typing = document.createElement('div');
+  typing.className = 'cmsg bot';
+  typing.innerHTML = '<span class="td"></span><span class="td"></span><span class="td"></span>';
+  el.appendChild(typing); el.scrollTop = el.scrollHeight;
+  setTimeout(() => { typing.innerHTML = text; el.scrollTop = el.scrollHeight; }, 420);
+}
+function addUserMsg(text) {
+  const el = document.getElementById('chatMsgs');
+  const d = document.createElement('div'); d.className = 'cmsg user'; d.textContent = text;
+  el.appendChild(d); el.scrollTop = el.scrollHeight;
+}
+function renderQRs() {
+  document.getElementById('chatQRs').innerHTML = QUICK.map(q => `<button class="qr-btn" onclick="handleQR('${q}')">${q}</button>`).join('');
+}
+function handleQR(text) { addUserMsg(text); processChat(text.toLowerCase()); }
+function sendChat() {
+  const inp = document.getElementById('chatInp'), text = inp.value.trim(); if (!text) return;
+  addUserMsg(text); inp.value = ''; processChat(text.toLowerCase());
+}
+function processChat(text) {
+  let resp = null;
+  for (const [k, fn] of Object.entries(BOT_KEYS)) {
+    if (text.includes(k)) { resp = fn(); break; }
+  }
+  if (!resp) {
+    if (text.match(/hi|hello|hey|vanakkam/)) resp = `Vanakkam! 🙏\nAsk me about: Menu, My Order, Timings, Offers, Golden People, Delivery, Payment, Tracking, or FAQs!`;
+    else if (text.match(/thank/)) resp = `You're welcome! 😊 Enjoy your meal!`;
+    else if (text.match(/cancel|refund/)) resp = `For cancellations & refunds:\nContact us right after placing your order. We'll process a full refund and notify you.`;
+    else if (text.match(/fresh|preserv/)) resp = `🌿 All food is cooked fresh every morning!\nNo preservatives, no artificial colours. Pure homemade! 😊`;
+    else resp = `I can help with:\n• Menu & prices\n• My Order status & ETA\n• Timings\n• Offers\n• Golden People benefits\n• Delivery info\n• Payment\n• Live tracking\n• FAQs\n\nType or tap any of these!`;
+  }
+  addBotMsg(resp);
+}
+
+/* ===================== ADMIN TOGGLES ===================== */
+function applyToggles() {
+  const t = DB.get('toggles', { today:true, tomorrow:true, golden:true, offers:true, ratings:true, chat:true });
+  const show = (id, val) => { const el = document.getElementById(id); if (el) el.style.display = val ? '' : 'none'; };
+  show('tBtn-today',    t.today !== false);
+  show('tBtn-tomorrow', t.tomorrow !== false);
+  // golden tab only shown if toggle ON and user hasn't logged in yet (once logged in, always visible)
+  const showGolden = t.golden !== false;
+  show('tBtn-golden', showGolden);
+  const fab = document.getElementById('goldenFab');
+  if (fab) fab.style.display = (showGolden && !goldenUser) ? 'flex' : 'none';
+  show('tickerEl',     t.offers !== false);
+  show('ratingsSection', t.ratings !== false);
+  const chatFab = document.getElementById('chatFab'), chatWin = document.getElementById('chatWin');
+  if (chatFab) chatFab.style.display = t.chat !== false ? '' : 'none';
+  if (chatWin && t.chat === false) { chatWin.classList.remove('open'); chatOpen = false; }
+}
+
+/* ===================== INIT ===================== */
+renderAllMenus();
+updateCartUI();
+renderTicker();
+renderReviews();
+applyToggles();
+if (goldenUser) updateGoldenUI();
+// Re-apply toggles every 4s (picks up admin changes)
+setInterval(() => {
+  applyToggles();
+  renderTicker(); // refresh offers from admin
+}, 4000);
+</script>
+</body>
+</html>

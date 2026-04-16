@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Amma's Kitchen — Admin Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Yeseva+One&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--sf:#E8620A;--sf-l:#FDF0E8;--sf-d:#B34A00;--tu:#F5A623;--gr:#2D7A3A;--gr-l:#EAF5EC;--gold:#B8860B;--gold-l:#FFFBEC;--gold-bdr:#E8C84A;--red:#c0392b;--red-l:#FCEBEB;--bg:#F7F4EF;--sb:#3D1F0A;--card:#fff;--text:#2A1A08;--muted:#7A6050;--bdr:rgba(61,31,10,.12)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh}
+
+/* SIDEBAR */
+.sb{width:206px;background:var(--sb);color:#fff;display:flex;flex-direction:column;min-height:100vh;flex-shrink:0;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sb-top{padding:1.1rem 1rem .82rem;border-bottom:1px solid rgba(255,255,255,.07)}
+.sb-brand{font-family:'Yeseva One',serif;font-size:1.02rem;color:var(--tu)}
+.sb-ver{font-size:.6rem;color:rgba(255,255,255,.33);margin-top:.12rem}
+.sb-nav{padding:.5rem 0;flex:1}
+.nl{display:flex;align-items:center;gap:.58rem;padding:.54rem 1rem;cursor:pointer;font-size:.78rem;color:rgba(255,255,255,.58);border-left:3px solid transparent;transition:background .13s;user-select:none;white-space:nowrap}
+.nl:hover{background:rgba(255,255,255,.06)}
+.nl.active{background:rgba(232,98,10,.17);color:#fff;border-left-color:var(--sf)}
+.nl.gold-nl.active{background:rgba(184,134,11,.18);border-left-color:var(--gold)}
+.nl-ic{font-size:.94rem;width:18px;text-align:center;flex-shrink:0}
+.sb-foot{padding:.75rem 1rem;border-top:1px solid rgba(255,255,255,.07);font-size:.6rem;color:rgba(255,255,255,.25)}
+
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;overflow-x:hidden;min-width:0}
+.topbar{background:var(--card);border-bottom:1px solid var(--bdr);padding:.7rem 1.4rem;display:flex;justify-content:space-between;align-items:center;gap:.65rem;flex-wrap:wrap;position:sticky;top:0;z-index:10}
+.topbar h1{font-family:'Yeseva One',serif;font-size:1.1rem}
+.tbr{display:flex;align-items:center;gap:.48rem;flex-wrap:wrap}
+.clk{font-size:.68rem;color:var(--muted);background:var(--bg);padding:.25rem .68rem;border-radius:8px}
+/* BUTTONS */
+.btn{padding:.42rem .86rem;border-radius:8px;font-size:.74rem;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;border:none;transition:all .13s;line-height:1.2;white-space:nowrap}
+.b-sf{background:var(--sf);color:#fff}.b-sf:hover{background:var(--sf-d)}
+.b-gr{background:var(--gr);color:#fff}.b-gr:hover{background:#1e5428}
+.b-out{background:transparent;border:1.5px solid var(--bdr);color:var(--muted)}.b-out:hover{border-color:var(--sf);color:var(--sf)}
+.b-red{background:var(--red-l);color:var(--red);border:1px solid rgba(192,57,43,.15)}.b-red:hover{background:var(--red);color:#fff}
+.b-gold{background:var(--gold);color:#fff}.b-gold:hover{background:#8B6508}
+.b-sm{padding:.25rem .6rem;font-size:.68rem;border-radius:7px}
+
+/* CONTENT */
+.content{padding:1.25rem 1.4rem;flex:1}
+.page{display:none}.page.active{display:block}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(128px,1fr));gap:.78rem;margin-bottom:1.18rem}
+.sc{background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:.88rem .98rem}
+.sl{font-size:.62rem;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.26rem}
+.sv{font-size:1.42rem;font-weight:700}
+.ss{font-size:.62rem;color:var(--muted);margin-top:.1rem}
+
+/* CARD */
+.card{background:var(--card);border:1px solid var(--bdr);border-radius:12px;overflow:hidden;margin-bottom:.95rem}
+.card-h{padding:.78rem 1.05rem;border-bottom:1px solid var(--bdr);display:flex;justify-content:space-between;align-items:center;gap:.55rem;flex-wrap:wrap}
+.card-h h3{font-size:.86rem;font-weight:500}
+.card-b{padding:.95rem}
+
+/* TABLE */
+.tbl-w{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.72rem;min-width:540px}
+th{text-align:left;padding:.48rem .72rem;font-size:.61rem;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--bdr);background:var(--bg);white-space:nowrap}
+td{padding:.62rem .72rem;border-bottom:1px solid var(--bdr);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#fdfaf5}
+.td-a{display:flex;gap:.26rem;flex-wrap:nowrap}
+
+/* STATUS BADGES */
+.sbg{display:inline-flex;align-items:center;padding:.13rem .5rem;border-radius:7px;font-size:.65rem;font-weight:500;white-space:nowrap}
+.sb-pend{background:#FFF8E1;color:#B8860B}.sb-conf{background:var(--gr-l);color:var(--gr)}.sb-prep{background:#E8F0FB;color:#1565C0}
+.sb-out{background:var(--sf-l);color:var(--sf-d)}.sb-del{background:#E8F5E9;color:#1B5E20}.sb-clo{background:#F5F3F0;color:#888}.sb-can{background:var(--red-l);color:var(--red)}
+
+/* FORM */
+.fg{margin-bottom:.82rem}
+.fl{font-size:.71rem;font-weight:500;margin-bottom:.28rem;display:block;color:var(--text)}
+.req{color:var(--sf)}
+.fi{width:100%;padding:.56rem .76rem;border:1.5px solid var(--bdr);border-radius:8px;font-size:.78rem;font-family:'DM Sans',sans-serif;background:#fff;color:var(--text);outline:none;transition:border-color .15s}
+.fi:focus{border-color:var(--sf)}
+textarea.fi{resize:vertical}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+select.fi{cursor:pointer}
+/* phone +91 prefix */
+.ph-field{display:flex}
+.ph-prefix{background:var(--bg);border:1.5px solid var(--bdr);border-right:none;border-radius:8px 0 0 8px;padding:.56rem .7rem;font-size:.78rem;font-weight:500;color:var(--muted);white-space:nowrap;user-select:none;display:flex;align-items:center}
+.ph-field .fi{border-radius:0 8px 8px 0}
+
+/* TOGGLE */
+.tog{position:relative;width:34px;height:19px;flex-shrink:0}
+.tog input{opacity:0;width:0;height:0}
+.tog-sl{position:absolute;inset:0;background:#ccc;border-radius:19px;cursor:pointer;transition:.2s}
+.tog-sl::before{content:'';position:absolute;width:13px;height:13px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}
+.tog input:checked+.tog-sl{background:var(--gr)}
+.tog input:checked+.tog-sl::before{transform:translateX(15px)}
+.tog.gold-tog input:checked+.tog-sl{background:var(--gold)}
+
+/* TOGGLE CARDS */
+.tog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:.75rem}
+.tc{background:var(--card);border:1px solid var(--bdr);border-radius:11px;padding:.86rem;display:flex;align-items:center;justify-content:space-between;gap:.52rem}
+.tc.gold-tc{border-color:var(--gold-bdr);background:var(--gold-l)}
+.tc-title{font-size:.8rem;font-weight:500;margin-bottom:.1rem}
+.tc-sub{font-size:.66rem;color:var(--muted)}
+
+/* MENU GRID */
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:.78rem}
+.mc{background:var(--card);border:1px solid var(--bdr);border-radius:12px;overflow:hidden}
+.mc-img{height:108px;position:relative;overflow:hidden;background:#f5f0ea;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.mc-img img{width:100%;height:100%;object-fit:cover}
+.mc-em{font-size:2.8rem}
+.mc-hov{position:absolute;inset:0;background:rgba(0,0,0,.46);display:none;align-items:center;justify-content:center;flex-direction:column;gap:.28rem;color:#fff;font-size:.7rem;text-align:center}
+.mc-img:hover .mc-hov{display:flex}
+.mc-body{padding:.68rem .82rem}
+.mc-name{font-weight:500;font-size:.82rem;margin-bottom:.12rem}
+.mc-price{font-size:.72rem;color:var(--sf-d);font-weight:600;margin-bottom:.5rem}
+.mc-foot{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.32rem}
+
+/* NOTIF ROW */
+.nr{padding:.78rem 0;border-bottom:1px solid var(--bdr);display:flex;align-items:flex-start;justify-content:space-between;gap:.78rem;flex-wrap:wrap}
+.nr:last-child{border-bottom:none}
+.nr-info h4{font-size:.8rem;font-weight:500}
+.nr-info p{font-size:.67rem;color:var(--muted);margin-top:.1rem;max-width:330px;line-height:1.5}
+.nr-ctrl{display:flex;align-items:flex-end;gap:.52rem;flex-wrap:wrap}
+
+/* OFFER CARDS */
+.oc{background:var(--sf-l);border:1px dashed var(--sf);border-radius:11px;padding:.82rem;margin-bottom:.68rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.52rem}
+.oc.oc-on{border-color:var(--gr);background:var(--gr-l)}
+.oc-name{font-weight:500;font-size:.8rem}
+.oc-sub{font-size:.66rem;color:var(--muted);margin-top:.1rem}
+
+/* ALERT BOXES */
+.info-box{background:#E8F0FB;border:1px solid #B5D4F4;border-radius:9px;padding:.75rem .88rem;font-size:.74rem;color:#1565C0;line-height:1.65;margin-bottom:.88rem}
+.warn-box{background:#FFF8E1;border:1px solid #FAC775;border-radius:9px;padding:.72rem .85rem;font-size:.72rem;color:#8B6914;line-height:1.62;margin-bottom:.82rem}
+.ok-box{background:var(--gr-l);border:1px solid #C0DD97;border-radius:9px;padding:.72rem .85rem;font-size:.72rem;color:var(--gr);line-height:1.62;margin-bottom:.82rem}
+.gold-box{background:var(--gold-l);border:1px solid var(--gold-bdr);border-radius:9px;padding:.72rem .85rem;font-size:.72rem;color:var(--gold);line-height:1.62;margin-bottom:.82rem}
+
+/* MODAL */
+.modal-ov{position:fixed;inset:0;background:rgba(42,26,8,.52);z-index:500;display:none;align-items:flex-start;justify-content:center;padding:1rem;overflow-y:auto}
+.modal-ov.open{display:flex}
+.mbx{background:var(--card);border-radius:14px;width:100%;max-width:505px;max-height:90vh;overflow-y:auto;margin:auto}
+.mbx-hd{padding:.85rem 1.12rem;border-bottom:1px solid var(--bdr);display:flex;justify-content:space-between;align-items:center}
+.mbx-hd h3{font-size:.88rem;font-weight:500}
+.mbx-cl{background:var(--bg);border:none;width:24px;height:24px;border-radius:50%;cursor:pointer;font-size:.86rem;display:flex;align-items:center;justify-content:center}
+.mbx-bd{padding:1rem}
+.mbx-ft{padding:.75rem 1.12rem;border-top:1px solid var(--bdr);display:flex;gap:.52rem;justify-content:flex-end}
+
+/* EMAIL PREVIEW */
+.ep{border:1px solid var(--bdr);border-radius:10px;overflow:hidden;font-size:.74rem}
+.ep-hd{background:var(--sb);color:#fff;padding:.82rem 1.08rem}
+.ep-body{padding:1.05rem;background:#fff}
+.ep-row{display:flex;justify-content:space-between;padding:.24rem 0;font-size:.74rem;border-bottom:1px solid #eee}
+.ep-row:last-child{border-bottom:none}
+.ep-ft{background:var(--bg);padding:.56rem 1.08rem;font-size:.64rem;color:var(--muted)}
+
+/* GOLDEN USERS */
+.gur{display:flex;align-items:center;gap:.82rem;padding:.68rem 0;border-bottom:1px solid var(--bdr)}
+.gur:last-child{border-bottom:none}
+.gur-av{width:32px;height:32px;border-radius:50%;background:var(--gold-l);border:1px solid var(--gold-bdr);display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0}
+
+/* TOAST */
+.toast{position:fixed;bottom:1.4rem;right:1.4rem;background:var(--sb);color:#fff;padding:.54rem .98rem;border-radius:10px;font-size:.75rem;z-index:600;opacity:0;transition:all .22s;pointer-events:none;transform:translateY(4px);max-width:310px}
+.toast.show{opacity:1;transform:translateY(0)}
+
+@media(max-width:768px){.sb{display:none}.content{padding:.95rem}.frow{grid-template-columns:1fr}.stats-row{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sb">
+  <div class="sb-top"><div class="sb-brand">Amma's Kitchen</div><div class="sb-ver">Admin Panel · v6.0 Part 2</div></div>
+  <nav class="sb-nav">
+    <div class="nl active"   onclick="gp('dashboard',this)"><span class="nl-ic">📊</span>Dashboard</div>
+    <div class="nl"          onclick="gp('orders',this)"><span class="nl-ic">📋</span>Orders</div>
+    <div class="nl"          onclick="gp('menu',this)"><span class="nl-ic">🍽️</span>Menu Manager</div>
+    <div class="nl"          onclick="gp('toggles',this)"><span class="nl-ic">🎚️</span>Site Toggles</div>
+    <div class="nl"          onclick="gp('location',this)"><span class="nl-ic">📍</span>Sender Location</div>
+    <div class="nl"          onclick="gp('delivery',this)"><span class="nl-ic">🛵</span>Delivery Config</div>
+    <div class="nl"          onclick="gp('upi',this)"><span class="nl-ic">💳</span>UPI Settings</div>
+    <div class="nl"          onclick="gp('offers',this)"><span class="nl-ic">🎁</span>Offers</div>
+    <div class="nl gold-nl"  onclick="gp('golden',this)"><span class="nl-ic">⭐</span>Golden People</div>
+    <div class="nl"          onclick="gp('notifications',this)"><span class="nl-ic">🔔</span>Notifications</div>
+    <div class="nl"          onclick="gp('sheets',this)"><span class="nl-ic">📊</span>Google Sheets</div>
+    <div class="nl"          onclick="gp('chatbot',this)"><span class="nl-ic">🤖</span>Chatbot / Bot</div>
+  </nav>
+  <div class="sb-foot">All settings auto-saved</div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <h1 id="pageTitle">Dashboard</h1>
+    <div class="tbr">
+      <span class="clk" id="clk"></span>
+      <a href="customer.html" target="_blank"><button class="btn b-out b-sm">👁 Site</button></a>
+      <a href="tracking.html" target="_blank"><button class="btn b-out b-sm">🗺 Track</button></a>
+      <button class="btn b-sf b-sm" onclick="saveAll()">💾 Save All</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="stats-row">
+        <div class="sc"><div class="sl">Total Orders</div><div class="sv" id="st-tot" style="color:var(--sf-d)">0</div><div class="ss">All time</div></div>
+        <div class="sc"><div class="sl">Revenue</div><div class="sv" id="st-rev" style="color:var(--gr)">₹0</div><div class="ss">Confirmed+</div></div>
+        <div class="sc"><div class="sl">Pending</div><div class="sv" id="st-pend" style="color:var(--tu)">0</div><div class="ss">Needs action</div></div>
+        <div class="sc"><div class="sl">Avg Distance</div><div class="sv" id="st-km" style="color:#185FA5">0 km</div><div class="ss">Admin only</div></div>
+        <div class="sc" style="border-color:var(--gold-bdr)"><div class="sl" style="color:var(--gold)">Golden Members</div><div class="sv" id="st-gold" style="color:var(--gold)">0</div><div class="ss">Registered</div></div>
+      </div>
+      <div class="card">
+        <div class="card-h"><h3>Recent Orders</h3><button class="btn b-out b-sm" onclick="gp('orders',document.querySelectorAll('.nl')[1])">View All →</button></div>
+        <div class="tbl-w"><table><thead><tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Amount</th><th>Dist (km)</th><th>ETA (min)</th><th>Status</th><th>Time</th></tr></thead><tbody id="dash-body"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- ORDERS -->
+    <div class="page" id="page-orders">
+      <div class="card">
+        <div class="card-h"><h3>All Orders</h3>
+          <div style="display:flex;gap:.4rem;align-items:center;flex-wrap:wrap">
+            <select class="fi b-sm" id="oFilter" style="width:auto" onchange="renderOrders()">
+              <option value="">All Statuses</option>
+              <option>Pending</option><option>Confirmed</option><option>Preparing</option>
+              <option>Out for Delivery</option><option>Delivered</option><option>Closed</option><option>Cancelled</option>
+            </select>
+            <button class="btn b-gr b-sm" onclick="exportCSV()">📥 CSV</button>
+          </div>
+        </div>
+        <div class="tbl-w"><table><thead><tr><th>ID</th><th>Date</th><th>Customer</th><th>Mobile</th><th>Email</th><th>Items</th><th>Amount</th><th>Dist</th><th>ETA</th><th>Txn</th><th>Status</th><th>Actions</th></tr></thead><tbody id="orders-body"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- MENU MANAGER -->
+    <div class="page" id="page-menu">
+      <div style="display:flex;gap:.55rem;margin-bottom:.95rem;flex-wrap:wrap">
+        <button class="btn b-sf" onclick="openAddItem()">+ Add Item</button>
+        <button class="btn b-gr" onclick="saveAll()">💾 Save</button>
+      </div>
+      <div class="card" style="margin-bottom:.88rem"><div class="card-h"><h3>🌅 Breakfast</h3></div><div class="card-b"><div class="mgrid" id="mg-b"></div></div></div>
+      <div class="card" style="margin-bottom:.88rem"><div class="card-h"><h3>☀️ Lunch</h3></div><div class="card-b"><div class="mgrid" id="mg-l"></div></div></div>
+      <div class="card" style="margin-bottom:.88rem"><div class="card-h"><h3>📅 Tomorrow Breakfast</h3></div><div class="card-b"><div class="mgrid" id="mg-tb"></div></div></div>
+      <div class="card" style="margin-bottom:.88rem"><div class="card-h"><h3>📅 Tomorrow Lunch</h3></div><div class="card-b"><div class="mgrid" id="mg-tl"></div></div></div>
+      <div class="card" style="border-color:var(--gold-bdr)"><div class="card-h" style="background:var(--gold-l)"><h3>⭐ Golden People Menu</h3></div><div class="card-b"><div class="mgrid" id="mg-g"></div></div></div>
+    </div>
+
+    <!-- TOGGLES -->
+    <div class="page" id="page-toggles">
+      <div class="card">
+        <div class="card-h"><h3>🎚️ Site Section Toggles</h3><button class="btn b-sf b-sm" onclick="saveToggles()">Save Toggles</button></div>
+        <div class="card-b">
+          <div class="warn-box">Changes apply to the customer website within ~4 seconds automatically.</div>
+          <div class="tog-grid">
+            <div class="tc"><div><div class="tc-title">🌅 Today's Orders</div><div class="tc-sub">Enable ordering for today</div></div><label class="tog"><input type="checkbox" id="tog-today" checked><span class="tog-sl"></span></label></div>
+            <div class="tc"><div><div class="tc-title">📅 Tomorrow Pre-booking</div><div class="tc-sub">Enable pre-booking tab &amp; orders</div></div><label class="tog"><input type="checkbox" id="tog-tomorrow" checked><span class="tog-sl"></span></label></div>
+            <div class="tc"><div><div class="tc-title">🗓️ Tomorrow Orders</div><div class="tc-sub">Allow placing tomorrow's orders</div></div><label class="tog"><input type="checkbox" id="tog-tmr-orders" checked><span class="tog-sl"></span></label></div>
+            <div class="tc gold-tc"><div><div class="tc-title">⭐ Golden People Category</div><div class="tc-sub">Show Golden tab on site</div></div><label class="tog gold-tog"><input type="checkbox" id="tog-golden" checked><span class="tog-sl"></span></label></div>
+            <div class="tc"><div><div class="tc-title">🎁 Offer Ticker</div><div class="tc-sub">Scrolling offer banner</div></div><label class="tog"><input type="checkbox" id="tog-offers" checked><span class="tog-sl"></span></label></div>
+            <div class="tc"><div><div class="tc-title">⭐ Ratings Section</div><div class="tc-sub">Customer reviews visible</div></div><label class="tog"><input type="checkbox" id="tog-ratings" checked><span class="tog-sl"></span></label></div>
+            <div class="tc"><div><div class="tc-title">💬 Chatbot Widget</div><div class="tc-sub">Floating chat assistant</div></div><label class="tog"><input type="checkbox" id="tog-chat" checked><span class="tog-sl"></span></label></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SENDER LOCATION -->
+    <div class="page" id="page-location">
+      <div class="card">
+        <div class="card-h"><h3>📍 Sender / Kitchen Location</h3><button class="btn b-sf b-sm" onclick="saveLoc()">Save Location</button></div>
+        <div class="card-b">
+          <div class="ok-box">Used for: delivery distance, ETA calculation, and the live tracking map kitchen pin.</div>
+          <div class="fg">
+            <label class="fl">Latitude, Longitude <span class="req">*</span></label>
+            <input class="fi" id="senderLL" placeholder="9.91918526788082, 78.09422025024031" value="9.91918526788082, 78.09422025024031">
+            <div style="font-size:.66rem;color:var(--muted);margin-top:.28rem">Format: <strong>lat, lng</strong> — e.g. <code>9.91918526788082, 78.09422025024031</code><br>To get: Open Google Maps → right-click your location → copy the two numbers shown at top.</div>
+          </div>
+          <div class="frow">
+            <div class="fg"><label class="fl">Kitchen Name</label><input class="fi" id="kName" placeholder="Amma's Kitchen"></div>
+            <div class="fg"><label class="fl">Full Address</label><input class="fi" id="kAddr" placeholder="Your kitchen address"></div>
+          </div>
+          <div id="locPrev" style="font-size:.74rem;color:var(--gr);margin-top:.3rem;display:none"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DELIVERY CONFIG -->
+    <div class="page" id="page-delivery">
+      <div class="card">
+        <div class="card-h"><h3>🛵 Delivery ETA Configuration</h3><button class="btn b-sf b-sm" onclick="saveDelivery()">Save</button></div>
+        <div class="card-b">
+          <div class="info-box"><strong>ETA Formula:</strong> Total = Prep Time + (Distance ÷ Speed) + Buffer<br>Example: 25 min + (3 km ÷ 0.3) + 5 = <strong>40 min total</strong></div>
+          <div class="frow">
+            <div class="fg"><label class="fl">Default Prep Time (minutes)</label><input class="fi" id="prepTime" type="number" value="25"><div style="font-size:.65rem;color:var(--muted);margin-top:.24rem">Overridable per item below</div></div>
+            <div class="fg"><label class="fl">Speed (km per minute)</label><input class="fi" id="dSpeed" type="number" step="0.05" value="0.3"></div>
+          </div>
+          <div class="frow">
+            <div class="fg"><label class="fl">Base Buffer (minutes)</label><input class="fi" id="dBuffer" type="number" value="5"></div>
+            <div class="fg"><label class="fl">Max Radius (km)</label><input class="fi" id="maxRad" type="number" value="5"></div>
+          </div>
+          <div style="font-size:.78rem;font-weight:500;margin-bottom:.58rem">Per-Item Prep Times (override default)</div>
+          <div id="prepGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:.52rem"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- UPI -->
+    <div class="page" id="page-upi">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.95rem">
+        <div class="card">
+          <div class="card-h"><h3>💳 UPI QR Code</h3></div>
+          <div class="card-b">
+            <div onclick="document.getElementById('upiFile').click()" style="border:2px dashed var(--bdr);border-radius:11px;padding:1.3rem;text-align:center;cursor:pointer;margin-bottom:.78rem;transition:border-color .15s" onmouseover="this.style.borderColor='var(--sf)'" onmouseout="this.style.borderColor=''">
+              <div style="font-size:1.65rem;margin-bottom:.32rem">📱</div>
+              <div style="font-size:.77rem;font-weight:500">Upload UPI QR Code</div>
+              <div style="font-size:.66rem;color:var(--muted);margin-top:.14rem">PNG, JPG · click to upload/replace</div>
+              <input type="file" id="upiFile" accept="image/*" style="display:none" onchange="uploadQR(this)">
+            </div>
+            <div id="qrPrev" style="text-align:center;display:none;margin-bottom:.75rem">
+              <img id="qrImg" style="max-width:148px;max-height:148px;border-radius:10px;border:1px solid var(--bdr)">
+              <div style="margin-top:.32rem;font-size:.66rem;color:var(--gr)">✅ QR Uploaded</div>
+              <button class="btn b-out b-sm" style="margin-top:.32rem" onclick="document.getElementById('upiFile').click()">Replace</button>
+            </div>
+            <div class="fg"><label class="fl">UPI ID</label><input class="fi" id="upiId" placeholder="yourname@upi" value="ammaskitchen@upi"></div>
+            <div class="fg"><label class="fl">Account Name</label><input class="fi" id="upiName" placeholder="Amma's Kitchen"></div>
+            <button class="btn b-sf" style="width:100%" onclick="saveUPI()">Save UPI Settings</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-h"><h3>📋 UPI Payment Flow</h3></div>
+          <div class="card-b">
+            <div class="ok-box"><strong>Customer steps:</strong><br>1. See QR code + UPI ID at checkout<br>2. Scan using GPay / PhonePe / Paytm<br>3. Pay exact amount<br>4. Enter Transaction/UTR ID<br>5. Order placed — you verify in your UPI app</div>
+            <div class="warn-box"><strong>Refund:</strong> Order can't be processed → Admin clicks Refund → Customer notified via SMS.<br><br>⚠️ WhatsApp notifications go to the <strong>admin number only</strong> — never to customer WhatsApp.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- OFFERS -->
+    <div class="page" id="page-offers">
+      <div class="card">
+        <div class="card-h"><h3>🎁 Manage Offers</h3><button class="btn b-sf b-sm" onclick="openOffer()">+ New Offer</button></div>
+        <div class="card-b" id="offersBody"></div>
+      </div>
+    </div>
+
+    <!-- GOLDEN PEOPLE -->
+    <div class="page" id="page-golden">
+      <div class="card" style="margin-bottom:.88rem;border-color:var(--gold-bdr)">
+        <div class="card-h" style="background:var(--gold-l)"><h3>⭐ Golden People Settings</h3><button class="btn b-gold b-sm" onclick="saveGolden()">Save Settings</button></div>
+        <div class="card-b">
+          <div class="gold-box">Customers aged 55+ register with Aadhaar. Age is calculated from entered DOB. Image is compressed &amp; stored. OCR is coded but hidden — will be enabled in a future update.</div>
+          <div class="frow">
+            <div class="fg"><label class="fl">Discount % <span class="req">*</span></label><input class="fi" id="gDisc" type="number" min="0" max="50" value="10"><div style="font-size:.64rem;color:var(--muted);margin-top:.22rem">Applied on all items after Golden login</div></div>
+            <div class="fg"><label class="fl">Minimum Age</label><input class="fi" id="gMinAge" type="number" value="55"></div>
+          </div>
+          <div class="fg"><label class="fl">Welcome Message</label><input class="fi" id="gMsg" value="Welcome to Golden People — our special care program for seniors!"></div>
+        </div>
+      </div>
+      <div class="card" style="border-color:var(--gold-bdr)">
+        <div class="card-h" style="background:var(--gold-l)"><h3>Registered Golden Members</h3><span id="gCnt" style="font-size:.72rem;color:var(--gold);font-weight:500"></span></div>
+        <div id="gUsersBody" class="card-b"></div>
+      </div>
+    </div>
+
+    <!-- NOTIFICATIONS -->
+    <div class="page" id="page-notifications">
+      <div class="card">
+        <div class="card-h"><h3>🔔 Notification Settings</h3><button class="btn b-sf b-sm" onclick="saveNotifs()">Save All</button></div>
+        <div class="card-b">
+          <div class="warn-box"><strong>⚠️ Policy:</strong> WhatsApp &amp; SMS notifications are sent ONLY to the admin numbers configured below. Customer receives order confirmation via Email only.</div>
+
+          <!-- WhatsApp Admin -->
+          <div class="nr">
+            <div class="nr-info"><h4>💬 WhatsApp (Admin Only)</h4><p>New order alerts to this admin WhatsApp. Customer does NOT receive WhatsApp notifications.</p></div>
+            <div class="nr-ctrl">
+              <div>
+                <div style="font-size:.65rem;font-weight:500;margin-bottom:.22rem">Admin WhatsApp Number <span class="req">*</span></div>
+                <div class="ph-field" style="width:215px">
+                  <span class="ph-prefix">+91</span>
+                  <input class="fi" id="waN" type="tel" placeholder="XXXXXXXXXX" maxlength="10" value="6000055552" style="border-radius:0 8px 8px 0" oninput="vPhone(this,'waFull')">
+                </div>
+                <div style="font-size:.62rem;color:var(--muted);margin-top:.18rem">Full: +91<span id="waFull">6000055552</span></div>
+              </div>
+              <div>
+                <div style="font-size:.65rem;font-weight:500;margin-bottom:.22rem">API Token</div>
+                <input class="fi" id="waKey" placeholder="WhatsApp API Token" style="width:148px">
+              </div>
+              <label class="tog"><input type="checkbox" id="waEnabled" checked><span class="tog-sl"></span></label>
+            </div>
+          </div>
+
+          <!-- SMS Admin -->
+          <div class="nr">
+            <div class="nr-info"><h4>📱 SMS (Admin Only)</h4><p>Order SMS to admin number only — not to customer mobile.</p></div>
+            <div class="nr-ctrl">
+              <div>
+                <div style="font-size:.65rem;font-weight:500;margin-bottom:.22rem">Admin SMS Number <span class="req">*</span></div>
+                <div class="ph-field" style="width:215px">
+                  <span class="ph-prefix">+91</span>
+                  <input class="fi" id="smsN" type="tel" placeholder="XXXXXXXXXX" maxlength="10" value="6000055552" style="border-radius:0 8px 8px 0" oninput="vPhone(this,'smsFull')">
+                </div>
+                <div style="font-size:.62rem;color:var(--muted);margin-top:.18rem">Full: +91<span id="smsFull">6000055552</span></div>
+              </div>
+              <div>
+                <div style="font-size:.65rem;font-weight:500;margin-bottom:.22rem">SMS API Key</div>
+                <input class="fi" id="smsKey" placeholder="MSG91 / Twilio Key" style="width:148px">
+              </div>
+              <label class="tog"><input type="checkbox" id="smsEnabled" checked><span class="tog-sl"></span></label>
+            </div>
+          </div>
+
+          <!-- Email SMTP -->
+          <div class="nr">
+            <div class="nr-info"><h4>📧 Email to Customer (SMTP)</h4><p>Order confirmation email sent to customer's email using your SMTP.</p></div>
+            <div class="nr-ctrl" style="flex-direction:column;align-items:flex-start;gap:.4rem">
+              <div style="display:flex;gap:.4rem;flex-wrap:wrap">
+                <div><div style="font-size:.63rem;margin-bottom:.18rem">SMTP Host</div><input class="fi" id="smtpH" placeholder="smtp.gmail.com" style="width:145px" value="smtp.gmail.com"></div>
+                <div><div style="font-size:.63rem;margin-bottom:.18rem">Port</div><input class="fi" id="smtpP" placeholder="587" style="width:62px" value="587"></div>
+              </div>
+              <div style="display:flex;gap:.4rem;flex-wrap:wrap">
+                <div><div style="font-size:.63rem;margin-bottom:.18rem">Email</div><input class="fi" id="smtpU" placeholder="your@email.com" style="width:162px"></div>
+                <div><div style="font-size:.63rem;margin-bottom:.18rem">App Password</div><input class="fi" id="smtpPw" type="password" placeholder="••••••••" style="width:125px"></div>
+              </div>
+              <label class="tog"><input type="checkbox" id="emailEnabled" checked><span class="tog-sl"></span></label>
+            </div>
+          </div>
+
+          <!-- Slack -->
+          <div class="nr">
+            <div class="nr-info"><h4>💼 Slack</h4><p>Post new order notifications to a Slack channel via webhook.</p></div>
+            <div class="nr-ctrl">
+              <input class="fi" id="slackWH" placeholder="Slack Webhook URL" style="width:235px">
+              <label class="tog"><input type="checkbox" id="slackEnabled"><span class="tog-sl"></span></label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Email Preview -->
+      <div class="card">
+        <div class="card-h"><h3>📧 Customer Email Template Preview</h3></div>
+        <div class="card-b">
+          <div class="ep">
+            <div class="ep-hd"><div style="font-family:'Yeseva One',serif;font-size:.94rem;color:var(--tu)">Amma's Kitchen</div><div style="font-size:.6rem;opacity:.42;margin-top:.1rem">Order Confirmation</div></div>
+            <div class="ep-body">
+              <div style="font-size:1.15rem;margin-bottom:.52rem">✅ Your order is confirmed!</div>
+              <p style="color:#555;line-height:1.7;margin-bottom:.8rem;font-size:.76rem">Dear <strong>[Customer Name]</strong>,<br>Thank you! Your fresh South Indian meal is being prepared with love.</p>
+              <div style="background:#f9f5ee;border-radius:8px;padding:.82rem;margin-bottom:.82rem">
+                <div class="ep-row"><span style="color:#777">Order ID</span><span><strong>#[ORDER_ID]</strong></span></div>
+                <div class="ep-row"><span style="color:#777">Items</span><span>[ITEMS]</span></div>
+                <div class="ep-row"><span style="color:#777">Amount Paid</span><span>₹[TOTAL]</span></div>
+                <div class="ep-row"><span style="color:#777">Estimated Time</span><span style="color:#2D7A3A"><strong>~[ETA] mins</strong></span></div>
+                <div class="ep-row"><span style="color:#777">Transaction ID</span><span>#[TXN_ID]</span></div>
+              </div>
+              <div style="background:#FDF0E8;border-left:3px solid #E8620A;padding:.6rem;font-size:.72rem;color:#B34A00;border-radius:0 8px 8px 0">If we cannot process your order, a full refund will be initiated and you will be notified.</div>
+            </div>
+            <div class="ep-ft">Amma's Kitchen · Homemade South Indian Food · Made with ❤️</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GOOGLE SHEETS -->
+    <div class="page" id="page-sheets">
+      <div class="card">
+        <div class="card-h"><h3>📊 Google Sheets Auto-Logging</h3><button class="btn b-gr b-sm" onclick="saveSheets()">Save</button></div>
+        <div class="card-b">
+          <div class="info-box"><strong>One-time setup:</strong><br>1. Create a Google Sheet<br>2. Extensions → Apps Script → paste webhook handler script<br>3. Deploy as Web App (Execute as: Me, Access: Anyone)<br>4. Paste the Web App URL below</div>
+          <div class="frow">
+            <div class="fg"><label class="fl">Web App URL</label><input class="fi" id="sheetsUrl" placeholder="https://script.google.com/macros/s/YOUR_ID/exec"></div>
+            <div class="fg"><label class="fl">Sheet Name</label><input class="fi" id="sheetsName" placeholder="Orders" value="Orders"></div>
+          </div>
+          <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem">
+            <button class="btn b-sf" onclick="saveSheets()">Save Config</button>
+            <button class="btn b-gr" onclick="testSheets()">🧪 Test Connection</button>
+            <button class="btn b-out" onclick="exportCSV()">📥 Download CSV</button>
+          </div>
+          <div style="font-size:.76rem;font-weight:500;margin-bottom:.52rem">Column mapping (auto-logged):</div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:.36rem">
+            ${['A:Order ID','B:Date','C:Name','D:Mobile','E:WhatsApp','F:Email','G:Address','H:Lat','I:Lng','J:Dist(km)','K:ETA(min)','L:Items','M:Total','N:Txn ID','O:Status','P:Is Golden'].map(c=>`<div style="background:var(--bg);border-radius:6px;padding:.26rem .56rem;font-size:.67rem">${c}</div>`).join('')}
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- ORDER MODAL -->
+<div class="modal-ov" id="orderModal">
+  <div class="mbx"><div class="mbx-hd"><h3 id="omTt">Order Detail</h3><button class="mbx-cl" onclick="closeMo('orderModal')">✕</button></div>
+  <div id="omBody" class="mbx-bd"></div><div id="omFoot" class="mbx-ft"></div></div>
+</div>
+<!-- ITEM MODAL -->
+<div class="modal-ov" id="itemModal">
+  <div class="mbx"><div class="mbx-hd"><h3 id="imTt">Add Item</h3><button class="mbx-cl" onclick="closeMo('itemModal')">✕</button></div>
+  <div id="imBody" class="mbx-bd"></div><div id="imFoot" class="mbx-ft"></div></div>
+</div>
+<!-- OFFER MODAL -->
+<div class="modal-ov" id="offerModal">
+  <div class="mbx">
+    <div class="mbx-hd"><h3 id="ofTt">Create Offer</h3><button class="mbx-cl" onclick="closeMo('offerModal')">✕</button></div>
+    <div class="mbx-bd">
+      <input type="hidden" id="of_idx" value="-1">
+      <div class="fg"><label class="fl">Offer Title <span class="req">*</span></label><input class="fi" id="of_title" placeholder="e.g. Order above ₹150 — FREE Curd Rice"></div>
+      <div class="frow">
+        <div class="fg"><label class="fl">Discount Type</label><select class="fi" id="of_type"><option value="percent">Percentage (%)</option><option value="flat">Flat Amount (₹)</option><option value="free">Free Item</option></select></div>
+        <div class="fg"><label class="fl">Value</label><input class="fi" id="of_val" type="number" placeholder="10"></div>
+      </div>
+      <div class="frow">
+        <div class="fg"><label class="fl">Promo Code (optional)</label><input class="fi" id="of_code" placeholder="e.g. FIRST10"></div>
+        <div class="fg"><label class="fl">Min Order (₹)</label><input class="fi" id="of_min" type="number" placeholder="0" value="0"></div>
+      </div>
+    </div>
+    <div class="mbx-ft"><button class="btn b-out" onclick="closeMo('offerModal')">Cancel</button><button class="btn b-sf" onclick="saveOffer()">Save Offer</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="shared.js"></script>
+<script>
+/* ============================================================
+   AMMA'S KITCHEN — ADMIN PANEL SCRIPT
+   ============================================================ */
+
+/* ---------- BASE MENU (mirrors customer.html) ---------- */
+const BASE_ITEMS = [
+  {id:'b1',name:'Veg Salad',price:40,emoji:'🥗',section:'breakfast',prepMins:5,cat:'Salad'},
+  {id:'b2',name:'Fruit Salad',price:50,emoji:'🍎',section:'breakfast',prepMins:5,cat:'Salad'},
+  {id:'b3',name:'Sprouts',price:45,emoji:'🌱',section:'breakfast',prepMins:8,cat:'Healthy'},
+  {id:'b4',name:'Millet Kanji',price:55,emoji:'🫙',section:'breakfast',prepMins:15,cat:'Porridge'},
+  {id:'l1',name:'Full Meals',price:120,emoji:'🍽️',section:'lunch',prepMins:25,cat:'Meals'},
+  {id:'l2',name:'Sambar Rice',price:70,emoji:'🍲',section:'lunch',prepMins:20,cat:'Rice'},
+  {id:'l3',name:'Rasam Rice',price:60,emoji:'🍜',section:'lunch',prepMins:18,cat:'Rice'},
+  {id:'l4',name:'Lemon Rice',price:65,emoji:'🍋',section:'lunch',prepMins:15,cat:'Rice'},
+  {id:'l5',name:'Turmeric Rice',price:65,emoji:'🌾',section:'lunch',prepMins:15,cat:'Rice'},
+  {id:'l6',name:'Curd Rice',price:60,emoji:'🥛',section:'lunch',prepMins:12,cat:'Rice'},
+  {id:'l7',name:'Special Curd Rice',price:80,emoji:'✨',section:'lunch',prepMins:15,cat:'Special'},
+  {id:'l8',name:'Veg Salad',price:45,emoji:'🥗',section:'lunch',prepMins:5,cat:'Salad'},
+  {id:'l9',name:'Egg Omelette',price:55,emoji:'🍳',section:'lunch',prepMins:10,cat:'Egg'},
+  {id:'l10',name:'Boiled Eggs',price:30,emoji:'🥚',section:'lunch',prepMins:8,cat:'Egg'},
+  {id:'tb1',name:'Veg Salad',price:40,emoji:'🥗',section:'tBreakfast',prepMins:5,cat:'Salad'},
+  {id:'tb2',name:'Fruit Salad',price:50,emoji:'🍇',section:'tBreakfast',prepMins:5,cat:'Salad'},
+  {id:'tb3',name:'Sprouts',price:45,emoji:'🌱',section:'tBreakfast',prepMins:8,cat:'Healthy'},
+  {id:'tb4',name:'Millet Kanji',price:55,emoji:'🫙',section:'tBreakfast',prepMins:15,cat:'Porridge'},
+  {id:'tl1',name:'Full Meals',price:120,emoji:'🍽️',section:'tLunch',prepMins:25,cat:'Meals'},
+  {id:'tl2',name:'Sambar Rice',price:70,emoji:'🍲',section:'tLunch',prepMins:20,cat:'Rice'},
+  {id:'tl3',name:'Rasam Rice',price:60,emoji:'🍜',section:'tLunch',prepMins:18,cat:'Rice'},
+  {id:'tl4',name:'White Rice & Rasam',price:50,emoji:'🍚',section:'tLunch',prepMins:15,cat:'Rice'},
+  {id:'tl5',name:'Special Meals',price:150,emoji:'🫕',section:'tLunch',prepMins:30,cat:'Special'},
+  {id:'g1',name:'Millet Kanji',price:60,emoji:'🫙',section:'golden',prepMins:15,cat:'Morning',golden:true},
+  {id:'g2',name:'Soft Idli',price:50,emoji:'🫓',section:'golden',prepMins:20,cat:'Morning',golden:true},
+  {id:'g3',name:'Veg Oatmeal',price:55,emoji:'🥣',section:'golden',prepMins:12,cat:'Morning',golden:true},
+  {id:'g4',name:'Fruit Salad',price:50,emoji:'🍎',section:'golden',prepMins:5,cat:'Morning',golden:true},
+  {id:'g5',name:'White Rice & Rasam',price:55,emoji:'🍚',section:'golden',prepMins:15,cat:'Lunch',golden:true},
+  {id:'g6',name:'Soft Full Meals',price:100,emoji:'🍽️',section:'golden',prepMins:25,cat:'Meals',golden:true},
+  {id:'g7',name:'Curd Rice',price:55,emoji:'🥛',section:'golden',prepMins:12,cat:'Rice',golden:true},
+  {id:'g8',name:'Steamed Vegetables',price:65,emoji:'🥦',section:'golden',prepMins:15,cat:'Healthy',golden:true},
+  {id:'g9',name:'Special Golden Meals',price:130,emoji:'⭐',section:'golden',prepMins:30,cat:'Special',golden:true},
+  {id:'g10',name:'Lemon Rice',price:60,emoji:'🍋',section:'golden',prepMins:15,cat:'Rice',golden:true},
+];
+
+function merged(base) { const ov = getMenuOverrides(); return { ...base, ...(ov[base.id] || {}) }; }
+
+/* ---------- DASHBOARD ---------- */
+function renderDashboard() {
+  const orders = getOrders();
+  const rev = orders.filter(o => ['Confirmed','Preparing','Out for Delivery','Delivered'].includes(o.status)).reduce((s,o) => s+o.total, 0);
+  const pend = orders.filter(o => o.status === 'Pending').length;
+  const dists = orders.filter(o => o.loc?.dist).map(o => parseFloat(o.loc.dist));
+  const avg = dists.length ? (dists.reduce((s,d) => s+d, 0) / dists.length).toFixed(1) : 0;
+  document.getElementById('st-tot').textContent  = orders.length;
+  document.getElementById('st-rev').textContent  = '₹' + rev;
+  document.getElementById('st-pend').textContent = pend;
+  document.getElementById('st-km').textContent   = avg + ' km';
+  document.getElementById('st-gold').textContent = getGoldenUsers().length;
+  const tbody = document.getElementById('dash-body');
+  tbody.innerHTML = orders.slice(0, 8).map(o => rowHtml(o, true)).join('') || '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:1.5rem">No orders yet</td></tr>';
+}
+
+/* ---------- ORDERS TABLE ---------- */
+function renderOrders() {
+  const f = document.getElementById('oFilter')?.value || '';
+  const orders = getOrders().filter(o => !f || o.status === f);
+  document.getElementById('orders-body').innerHTML = orders.map(o => rowHtml(o, false)).join('') || '<tr><td colspan="12" style="text-align:center;color:var(--muted);padding:1.5rem">No orders found</td></tr>';
+}
+
+const SC = { Pending:'sb-pend', Confirmed:'sb-conf', Preparing:'sb-prep', 'Out for Delivery':'sb-out', Delivered:'sb-del', Closed:'sb-clo', Cancelled:'sb-can' };
+
+function rowHtml(o, compact) {
+  const sc = SC[o.status] || 'sb-pend';
+  const items = (o.items||[]).map(i => `${i.name}×${i.qty}`).join(', ');
+  const dist = o.loc?.dist ? parseFloat(o.loc.dist).toFixed(1) : '—';
+  const eta  = o.loc?.eta?.total || '—';
+  if (compact) return `<tr><td style="font-weight:500;color:var(--sf-d)">#${o.orderId}</td><td>${o.customer?.name||'—'}</td><td style="max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.68rem">${items}</td><td>₹${o.total}</td><td style="color:var(--sf-d)">${dist}</td><td style="color:var(--gr)">${eta}min</td><td><span class="sbg ${sc}">${o.status}</span></td><td style="font-size:.65rem;color:var(--muted)">${o.date?.split(',')[1]?.trim()||''}</td></tr>`;
+  return `<tr>
+    <td style="font-weight:500;color:var(--sf-d)">#${o.orderId}</td>
+    <td style="font-size:.65rem">${o.date||'—'}</td>
+    <td>${o.customer?.name||'—'}</td>
+    <td>${o.customer?.mobile||'—'}</td>
+    <td style="font-size:.65rem">${o.customer?.email||'—'}</td>
+    <td style="max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.65rem">${items}</td>
+    <td>₹${o.total}${o.isGolden?'<span style="margin-left:2px;font-size:.6rem;color:var(--gold)">⭐</span>':''}</td>
+    <td style="color:var(--sf-d);font-weight:500">${dist}</td>
+    <td style="color:var(--gr)">${eta}min</td>
+    <td style="font-size:.65rem;color:var(--muted)">${o.txnId||'—'}</td>
+    <td><span class="sbg ${sc}">${o.status}</span></td>
+    <td class="td-a">
+      <button class="btn b-out b-sm" onclick="viewOrder('${o.orderId}')">👁</button>
+      <button class="btn b-out b-sm" onclick="openStatusModal('${o.orderId}')">↕</button>
+      ${(o.status==='Pending'||o.status==='Confirmed')?`<button class="btn b-red b-sm" onclick="refund('${o.orderId}')">Refund</button>`:''}
+    </td>
+  </tr>`;
+}
+
+function openStatusModal(oid) {
+  const o = findOrder(oid); if (!o) return;
+  const statuses = ['Pending','Confirmed','Preparing','Out for Delivery','Delivered','Closed','Cancelled'];
+  document.getElementById('omTt').textContent = 'Update Status: #' + oid;
+  document.getElementById('omBody').innerHTML = `<p style="font-size:.76rem;color:var(--muted);margin-bottom:.75rem">Current: <strong>${o.status}</strong></p><div style="display:flex;flex-direction:column;gap:.4rem">${statuses.map(s=>`<button class="btn ${s===o.status?'b-sf':'b-out'}" style="text-align:left;justify-content:flex-start" onclick="setStatus('${oid}','${s}');closeMo('orderModal')">${s===o.status?'✓ ':''}${s}</button>`).join('')}</div>`;
+  document.getElementById('omFoot').innerHTML = `<button class="btn b-out" onclick="closeMo('orderModal')">Close</button>`;
+  openMo('orderModal');
+}
+
+function setStatus(oid, status) {
+  const orders = getOrders(); const o = orders.find(x => x.orderId === oid);
+  if (o) { o.status = status; saveOrders(orders); renderOrders(); renderDashboard(); showToast('Status → ' + status); }
+}
+
+function viewOrder(oid) {
+  const o = findOrder(oid); if (!o) return;
+  const items = (o.items||[]).map(i => `<div style="display:flex;justify-content:space-between;font-size:.75rem;padding:.2rem 0;border-bottom:1px solid var(--bdr)"><span>${i.name} ×${i.qty}</span><span>₹${i.price*i.qty}</span></div>`).join('');
+  document.getElementById('omTt').textContent = 'Order #' + o.orderId;
+  document.getElementById('omBody').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem">
+      <div style="background:var(--bg);border-radius:9px;padding:.75rem">
+        <div style="font-size:.6rem;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.42rem">Customer</div>
+        <div style="font-size:.75rem;line-height:1.8"><strong>${o.customer?.name}</strong><br>${o.customer?.mobile}<br><span style="color:var(--sf-d)">${o.customer?.email||'—'}</span><br><span style="font-size:.68rem;color:var(--muted)">${(o.customer?.address||'—').substring(0,52)}…</span>${o.isGolden?'<br><span style="color:var(--gold);font-size:.67rem">⭐ Golden Member</span>':''}</div>
+      </div>
+      <div style="background:var(--bg);border-radius:9px;padding:.75rem">
+        <div style="font-size:.6rem;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.42rem">Delivery (Admin Only)</div>
+        <div style="font-size:.75rem;line-height:1.85">Distance: <strong style="color:var(--sf-d)">${parseFloat(o.loc?.dist||0).toFixed(2)} km</strong><br>Prep: ~${o.loc?.eta?.prep||'—'} min<br>Delivery: ~${o.loc?.eta?.delivery||'—'} min<br>Total ETA: <strong style="color:var(--gr)">${o.loc?.eta?.total||'—'} min</strong></div>
+      </div>
+    </div>
+    <div style="background:#fff;border:1px solid var(--bdr);border-radius:9px;padding:.75rem;margin-bottom:.75rem">
+      ${items}
+      <div style="display:flex;justify-content:space-between;font-weight:700;color:var(--sf-d);font-size:.8rem;margin-top:.4rem;padding-top:.4rem;border-top:2px solid var(--bdr)"><span>Total</span><span>₹${o.total}</span></div>
+    </div>
+    <div style="background:var(--bg);border-radius:9px;padding:.75rem">
+      <div style="font-size:.75rem;line-height:1.82">Txn ID: <strong>#${o.txnId}</strong><br>Date: ${o.date}<br>Status: <span class="sbg ${SC[o.status]||'sb-pend'}">${o.status}</span></div>
+    </div>`;
+  document.getElementById('omFoot').innerHTML = `
+    <button class="btn b-out" onclick="closeMo('orderModal')">Close</button>
+    <button class="btn b-sf" onclick="closeMo('orderModal');openStatusModal('${o.orderId}')">Update Status</button>
+    ${(o.status==='Pending'||o.status==='Confirmed')?`<button class="btn b-red" onclick="refund('${o.orderId}');closeMo('orderModal')">Refund</button>`:''}`;
+  openMo('orderModal');
+}
+function refund(oid) {
+  if (!confirm('Initiate refund for #' + oid + '?')) return;
+  setStatus(oid, 'Cancelled'); showToast('Refund initiated — admin notified ✅');
+}
+
+/* ---------- MENU MANAGER ---------- */
+const SECTION_MAP = [
+  {key:'breakfast',id:'mg-b'},{key:'lunch',id:'mg-l'},
+  {key:'tBreakfast',id:'mg-tb'},{key:'tLunch',id:'mg-tl'},
+  {key:'golden',id:'mg-g'},
+];
+function renderMenuGrids() {
+  SECTION_MAP.forEach(({ key, id }) => {
+    const grid = document.getElementById(id); if (!grid) return;
+    const items = BASE_ITEMS.filter(i => i.section === key).map(merged);
+    grid.innerHTML = items.map(item => {
+      const avail = item.available !== false;
+      return `<div class="mc">
+        <div class="mc-img" onclick="trigImg('${item.id}')">
+          ${item.image ? `<img src="${item.image}" alt="">` : `<span class="mc-em">${item.emoji}</span>`}
+          <div class="mc-hov">📷 Upload Image<br><span style="font-size:.63rem">Click to replace</span></div>
+          <input type="file" id="imgf_${item.id}" accept="image/*" style="display:none" onchange="handleImg(this,'${item.id}')">
+        </div>
+        <div class="mc-body">
+          <div class="mc-name">${item.name}${item.golden?'<span style="color:var(--gold);margin-left:2px;font-size:.72rem">⭐</span>':''}</div>
+          <div class="mc-price">₹${item.price} · ${item.prepMins||20} min prep</div>
+          <div class="mc-foot">
+            <div style="display:flex;align-items:center;gap:.36rem">
+              <label class="tog"><input type="checkbox" ${avail?'checked':''} onchange="toggleItem('${item.id}',this.checked)"><span class="tog-sl"></span></label>
+              <span style="font-size:.68rem;color:var(--muted)">${avail?'Available':'Sold out'}</span>
+            </div>
+            <div style="display:flex;gap:.26rem">
+              <button class="btn b-out b-sm" onclick="editItem('${item.id}')">✏️</button>
+              <button class="btn b-red b-sm" onclick="delItem('${item.id}')">🗑</button>
+            </div>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  });
+  renderPrepGrid();
+}
+function trigImg(id) { document.getElementById('imgf_'+id).click(); }
+async function handleImg(input, id) {
+  const file = input.files[0]; if (!file) return;
+  try {
+    const data = await compressImage(file, 620, 0.72);
+    setMenuOverride(id, { image: data });
+    renderMenuGrids(); showToast('Image uploaded ✅');
+  } catch { showToast('Image upload failed ⚠️'); }
+}
+function toggleItem(id, val) {
+  setMenuOverride(id, { available: val });
+  showToast((val ? '✅ Available: ' : '❌ Sold out: ') + (BASE_ITEMS.find(i => i.id === id)?.name || id));
+}
+function delItem(id) {
+  if (!confirm('Delete this item?')) return;
+  setMenuOverride(id, { deleted: true, available: false });
+  const idx = BASE_ITEMS.findIndex(i => i.id === id);
+  if (idx > -1) BASE_ITEMS.splice(idx, 1);
+  renderMenuGrids(); showToast('Item deleted ✅');
+}
+function editItem(id) {
+  const item = merged(BASE_ITEMS.find(i => i.id === id) || {});
+  document.getElementById('imTt').textContent = 'Edit: ' + item.name;
+  document.getElementById('imBody').innerHTML = `
+    <div class="fg"><label class="fl">Name</label><input class="fi" id="ei_n" value="${item.name}"></div>
+    <div class="frow">
+      <div class="fg"><label class="fl">Price (₹)</label><input class="fi" id="ei_p" type="number" value="${item.price}"></div>
+      <div class="fg"><label class="fl">Prep Time (mins)</label><input class="fi" id="ei_prep" type="number" value="${item.prepMins||20}"></div>
+    </div>
+    <div class="frow">
+      <div class="fg"><label class="fl">Emoji</label><input class="fi" id="ei_em" value="${item.emoji}"></div>
+      <div class="fg"><label class="fl">Category</label><input class="fi" id="ei_cat" value="${item.cat||''}"></div>
+    </div>
+    <div class="fg"><label class="fl">Description</label><textarea class="fi" id="ei_desc" rows="2">${item.desc||''}</textarea></div>`;
+  document.getElementById('imFoot').innerHTML = `<button class="btn b-out" onclick="closeMo('itemModal')">Cancel</button><button class="btn b-sf" onclick="saveEdit('${id}')">Save</button>`;
+  openMo('itemModal');
+}
+function saveEdit(id) {
+  setMenuOverride(id, { name:document.getElementById('ei_n').value, price:parseInt(document.getElementById('ei_p').value)||undefined, prepMins:parseInt(document.getElementById('ei_prep').value)||undefined, emoji:document.getElementById('ei_em').value, cat:document.getElementById('ei_cat').value, desc:document.getElementById('ei_desc').value });
+  renderMenuGrids(); closeMo('itemModal'); showToast('Item updated ✅');
+}
+function openAddItem() {
+  document.getElementById('imTt').textContent = 'Add New Item';
+  document.getElementById('imBody').innerHTML = `
+    <div class="fg"><label class="fl">Name <span class="req">*</span></label><input class="fi" id="ni_n" placeholder="e.g. Pongal"></div>
+    <div class="frow">
+      <div class="fg"><label class="fl">Price (₹)</label><input class="fi" id="ni_p" type="number" placeholder="60"></div>
+      <div class="fg"><label class="fl">Prep Time (mins)</label><input class="fi" id="ni_prep" type="number" placeholder="20"></div>
+    </div>
+    <div class="frow">
+      <div class="fg"><label class="fl">Emoji</label><input class="fi" id="ni_em" placeholder="🍛"></div>
+      <div class="fg"><label class="fl">Section</label>
+        <select class="fi" id="ni_sec">
+          <option value="breakfast">Breakfast</option><option value="lunch">Lunch</option>
+          <option value="tBreakfast">Tomorrow Breakfast</option><option value="tLunch">Tomorrow Lunch</option>
+          <option value="golden">Golden People</option>
+        </select>
+      </div>
+    </div>
+    <div class="fg"><label class="fl">Description</label><textarea class="fi" id="ni_desc" rows="2" placeholder="Describe the dish…"></textarea></div>`;
+  document.getElementById('imFoot').innerHTML = `<button class="btn b-out" onclick="closeMo('itemModal')">Cancel</button><button class="btn b-sf" onclick="addItem()">Add Item</button>`;
+  openMo('itemModal');
+}
+function addItem() {
+  const name = document.getElementById('ni_n').value.trim(); if (!name) { showToast('Name required ⚠️'); return; }
+  const section = document.getElementById('ni_sec').value;
+  const newId = section.slice(0, 2) + '_' + Date.now();
+  BASE_ITEMS.push({ id:newId, name, price:parseInt(document.getElementById('ni_p').value)||60, emoji:document.getElementById('ni_em').value||'🍛', section, prepMins:parseInt(document.getElementById('ni_prep').value)||20, cat:'Custom', desc:document.getElementById('ni_desc').value, golden:section==='golden' });
+  setMenuOverride(newId, { available: true });
+  renderMenuGrids(); closeMo('itemModal'); showToast(name + ' added ✅');
+}
+
+/* ---------- PREP TIME GRID ---------- */
+function renderPrepGrid() {
+  const el = document.getElementById('prepGrid'); if (!el) return;
+  el.innerHTML = BASE_ITEMS.filter(i => i.section !== 'golden').slice(0, 16).map(item => {
+    const m = merged(item);
+    return `<div style="background:#fff;border:1px solid var(--bdr);border-radius:8px;padding:.5rem .68rem;display:flex;align-items:center;justify-content:space-between;gap:.4rem">
+      <span style="font-size:.72rem;font-weight:500">${m.emoji} ${m.name}</span>
+      <input type="number" value="${m.prepMins||20}" min="1" max="120" style="width:46px;padding:.22rem .36rem;border:1.5px solid var(--bdr);border-radius:6px;font-size:.72rem;text-align:center;font-family:'DM Sans',sans-serif" onchange="setPrepTime('${item.id}',this.value)">
+    </div>`;
+  }).join('');
+}
+function setPrepTime(id, val) { setMenuOverride(id, { prepMins: parseInt(val) }); }
+
+/* ---------- TOGGLES ---------- */
+function loadToggles() {
+  const t = DB.get('toggles', { today:true, tomorrow:true, golden:true, offers:true, ratings:true, chat:true });
+  ['today','tomorrow','golden','offers','ratings','chat'].forEach(k => {
+    const el = document.getElementById('tog-' + k); if (el) el.checked = t[k] !== false;
+  });
+}
+function saveToggles() {
+  const keys = ['today','tomorrow','golden','offers','ratings','chat'];
+  const t = {};
+  keys.forEach(k => { const el = document.getElementById('tog-' + k); t[k] = el ? el.checked : true; });
+  DB.set('toggles', t); showToast('Toggles saved — site updates in ~4 sec ✅');
+}
+
+/* ---------- SENDER LOCATION ---------- */
+function loadLoc() {
+  const lat = Cfg.get('senderLat', 9.91918526788082), lng = Cfg.get('senderLng', 78.09422025024031);
+  document.getElementById('senderLL').value = lat + ', ' + lng;
+  document.getElementById('kName').value = Cfg.get('kitchenName', "Amma's Kitchen");
+  document.getElementById('kAddr').value = Cfg.get('kitchenAddr', '');
+  const prev = document.getElementById('locPrev');
+  prev.style.display = 'block'; prev.textContent = `📍 Current: ${lat}, ${lng}`;
+}
+function saveLoc() {
+  const raw = document.getElementById('senderLL').value.trim();
+  const parts = raw.split(',').map(s => parseFloat(s.trim()));
+  if (parts.length !== 2 || isNaN(parts[0]) || isNaN(parts[1])) { showToast('Invalid format. Use: lat, lng ⚠️'); return; }
+  Cfg.setMany({ senderLat:parts[0], senderLng:parts[1], kitchenName:document.getElementById('kName').value, kitchenAddr:document.getElementById('kAddr').value });
+  const prev = document.getElementById('locPrev');
+  prev.style.display = 'block'; prev.textContent = `✅ Saved: ${parts[0]}, ${parts[1]}`;
+  showToast('Kitchen location saved ✅');
+}
+
+/* ---------- DELIVERY ---------- */
+function loadDelivery() {
+  document.getElementById('prepTime').value = Cfg.get('prepTime', 25);
+  document.getElementById('dSpeed').value   = Cfg.get('delivSpeed', 0.3);
+  document.getElementById('dBuffer').value  = Cfg.get('deliveryBuffer', 5);
+  document.getElementById('maxRad').value   = Cfg.get('maxRadius', 5);
+}
+function saveDelivery() {
+  Cfg.setMany({ prepTime:parseInt(document.getElementById('prepTime').value)||25, delivSpeed:parseFloat(document.getElementById('dSpeed').value)||0.3, deliveryBuffer:parseInt(document.getElementById('dBuffer').value)||5, maxRadius:parseInt(document.getElementById('maxRad').value)||5 });
+  showToast('Delivery config saved ✅');
+}
+
+/* ---------- UPI ---------- */
+function loadUPI() {
+  document.getElementById('upiId').value   = Cfg.get('upiId', 'ammaskitchen@upi');
+  document.getElementById('upiName').value = Cfg.get('upiName', "Amma's Kitchen");
+  const qr = DB.get('upi_qr', '');
+  if (qr) { document.getElementById('qrPrev').style.display = 'block'; document.getElementById('qrImg').src = qr; }
+}
+function uploadQR(input) {
+  const file = input.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => { DB.set('upi_qr', e.target.result); document.getElementById('qrImg').src = e.target.result; document.getElementById('qrPrev').style.display = 'block'; showToast('QR uploaded ✅'); };
+  reader.readAsDataURL(file);
+}
+function saveUPI() {
+  Cfg.setMany({ upiId:document.getElementById('upiId').value.trim(), upiName:document.getElementById('upiName').value.trim() });
+  showToast('UPI settings saved ✅');
+}
+
+/* ---------- OFFERS ---------- */
+function renderOffers() {
+  const offers = DB.get('offers', [
+    {text:'Order above ₹150 — FREE Curd Rice',type:'free',active:true},
+    {text:'First Order — 10% Discount',type:'percent',val:10,code:'FIRST10',active:true},
+  ]);
+  const el = document.getElementById('offersBody'); if (!el) return;
+  if (!offers.length) { el.innerHTML = '<div style="color:var(--muted);font-size:.78rem">No offers. Click + New Offer.</div>'; return; }
+  el.innerHTML = offers.map((o, i) => `<div class="oc ${o.active?'oc-on':''}">
+    <div>
+      <div class="oc-name">${o.text}</div>
+      <div class="oc-sub">${o.code?'Code: '+o.code+' · ':'Auto-apply · '}${o.type==='percent'?o.val+'% off':o.type==='flat'?'₹'+o.val+' off':'Free item'}${o.minOrder>0?' · Min: ₹'+o.minOrder:''}</div>
+    </div>
+    <div style="display:flex;gap:.38rem;align-items:center">
+      <label class="tog"><input type="checkbox" ${o.active?'checked':''} onchange="toggleOffer(${i},this.checked)"><span class="tog-sl"></span></label>
+      <button class="btn b-out b-sm" onclick="editOffer(${i})">✏️</button>
+      <button class="btn b-red b-sm" onclick="delOffer(${i})">🗑</button>
+    </div>
+  </div>`).join('');
+}
+function toggleOffer(i, val) { const o = DB.get('offers',[]); if (o[i]) o[i].active=val; DB.set('offers',o); renderOffers(); }
+function delOffer(i) { if (!confirm('Remove this offer?')) return; const o = DB.get('offers',[]); o.splice(i,1); DB.set('offers',o); renderOffers(); showToast('Offer removed'); }
+function openOffer() { setOfferModal(-1, null); }
+function editOffer(i) { const offers = DB.get('offers',[]); setOfferModal(i, offers[i]); }
+function setOfferModal(idx, o) {
+  document.getElementById('ofTt').textContent = idx < 0 ? 'Create Offer' : 'Edit Offer';
+  document.getElementById('of_idx').value   = idx;
+  document.getElementById('of_title').value = o?.text || '';
+  document.getElementById('of_type').value  = o?.type || 'percent';
+  document.getElementById('of_val').value   = o?.val || '';
+  document.getElementById('of_code').value  = o?.code || '';
+  document.getElementById('of_min').value   = o?.minOrder || 0;
+  openMo('offerModal');
+}
+function saveOffer() {
+  const title = document.getElementById('of_title').value.trim(); if (!title) { showToast('Title required ⚠️'); return; }
+  const idx = parseInt(document.getElementById('of_idx').value);
+  const obj = { text:title, type:document.getElementById('of_type').value, val:parseInt(document.getElementById('of_val').value)||0, code:document.getElementById('of_code').value.trim(), minOrder:parseInt(document.getElementById('of_min').value)||0, active:true };
+  const offers = DB.get('offers', []);
+  if (idx >= 0 && idx < offers.length) offers[idx] = obj; else offers.push(obj);
+  DB.set('offers', offers); renderOffers(); closeMo('offerModal'); showToast('Offer saved ✅');
+}
+
+/* ---------- GOLDEN ---------- */
+function loadGolden() {
+  document.getElementById('gDisc').value   = Cfg.get('goldenDiscount', 10);
+  document.getElementById('gMinAge').value = Cfg.get('goldenMinAge', 55);
+  document.getElementById('gMsg').value    = Cfg.get('goldenMsg', "Welcome to Golden People — our special care program for seniors!");
+  const users = getGoldenUsers();
+  const cntEl = document.getElementById('gCnt');
+  if (cntEl) cntEl.textContent = users.length + ' member' + (users.length !== 1 ? 's' : '');
+  const el = document.getElementById('gUsersBody'); if (!el) return;
+  if (!users.length) { el.innerHTML = '<div style="color:var(--muted);font-size:.78rem">No Golden members registered yet.</div>'; return; }
+  const cols = ['#FFE4CC','#C8E6C9','#BBDEFB','#F8BBD0','#E1BEE7'];
+  el.innerHTML = users.map((u, i) => `<div class="gur">
+    <div class="gur-av" style="background:${cols[i%5]}">${u.name[0]?.toUpperCase()}</div>
+    <div style="flex:1;min-width:0">
+      <div style="font-weight:500;font-size:.82rem">${u.name}</div>
+      <div style="font-size:.67rem;color:var(--muted)">DOB: ${u.dob} · Age: <strong style="color:var(--gold)">${u.age}</strong> · Reg: ${u.registeredAt?.substring(0,10)||'—'}</div>
+    </div>
+  </div>`).join('');
+}
+function saveGolden() {
+  Cfg.setMany({ goldenDiscount:parseInt(document.getElementById('gDisc').value)||10, goldenMinAge:parseInt(document.getElementById('gMinAge').value)||55, goldenMsg:document.getElementById('gMsg').value });
+  showToast('Golden settings saved ✅');
+}
+
+/* ---------- NOTIFICATIONS ---------- */
+function vPhone(input, previewId) {
+  const digits = input.value.replace(/\D/g,'').slice(0, 10); input.value = digits;
+  const prev = document.getElementById(previewId); if (prev) prev.textContent = digits;
+  input.style.borderColor = digits.length === 0 ? '' : digits.length < 10 ? 'var(--tu)' : 'var(--gr)';
+}
+function loadNotifs() {
+  document.getElementById('waN').value    = Cfg.get('waAdminNum', '6000055552');
+  document.getElementById('smsN').value   = Cfg.get('smsAdminNum', '6000055552');
+  document.getElementById('waFull').textContent  = Cfg.get('waAdminNum', '6000055552');
+  document.getElementById('smsFull').textContent = Cfg.get('smsAdminNum', '6000055552');
+  document.getElementById('slackWH').value = Cfg.get('slackWebhook', '');
+  document.getElementById('smtpH').value   = Cfg.get('smtpHost', 'smtp.gmail.com');
+  document.getElementById('smtpP').value   = Cfg.get('smtpPort', '587');
+  document.getElementById('smtpU').value   = Cfg.get('smtpUser', '');
+}
+function saveNotifs() {
+  const waN   = document.getElementById('waN').value.replace(/\D/g,'');
+  const smsN  = document.getElementById('smsN').value.replace(/\D/g,'');
+  if (waN.length !== 10)  { showToast('WhatsApp number must be exactly 10 digits ⚠️'); document.getElementById('waN').focus(); return; }
+  if (smsN.length !== 10) { showToast('SMS number must be exactly 10 digits ⚠️'); document.getElementById('smsN').focus(); return; }
+  Cfg.setMany({ waAdminNum:waN, waFullNum:'+91'+waN, smsAdminNum:smsN, smsFullNum:'+91'+smsN, slackWebhook:document.getElementById('slackWH').value, smtpHost:document.getElementById('smtpH').value, smtpPort:document.getElementById('smtpP').value, smtpUser:document.getElementById('smtpU').value });
+  showToast(`Notifications saved ✅ WhatsApp: +91${waN} · SMS: +91${smsN}`);
+}
+
+/* ---------- SHEETS ---------- */
+function loadSheets() {
+  document.getElementById('sheetsUrl').value  = Cfg.get('sheetsUrl', '');
+  document.getElementById('sheetsName').value = Cfg.get('sheetsName', 'Orders');
+}
+function saveSheets() { Cfg.setMany({ sheetsUrl:document.getElementById('sheetsUrl').value.trim(), sheetsName:document.getElementById('sheetsName').value.trim() }); showToast('Sheets config saved ✅'); }
+function testSheets() {
+  const url = Cfg.get('sheetsUrl', ''); if (!url) { showToast('Enter Web App URL first ⚠️'); return; }
+  fetch(url + '?test=1').then(() => showToast('✅ Connection successful!')).catch(() => showToast('⚠️ Connection failed — check URL'));
+}
+
+/* ---------- CSV EXPORT ---------- */
+function exportCSV() {
+  const orders = getOrders(); if (!orders.length) { showToast('No orders to export'); return; }
+  const H = ['Order ID','Date','Name','Mobile','WhatsApp','Email','Address','Lat','Lng','Dist (km)','ETA (mins)','Items','Total (₹)','Txn ID','Status','Is Golden'];
+  const rows = orders.map(o => [o.orderId,o.date,o.customer?.name,o.customer?.mobile,o.customer?.whatsapp,o.customer?.email||'',o.loc?.address||'',o.loc?.lat||'',o.loc?.lng||'',o.loc?.dist||'',o.loc?.eta?.total||'',(o.items||[]).map(i=>`${i.name}x${i.qty}`).join('|'),o.total,o.txnId,o.status,o.isGolden?'Yes':'No'].map(v=>`"${String(v||'').replace(/"/g,'""')}"`));
+  const csv = [H, ...rows].map(r => r.join(',')).join('\n');
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download = 'ammas_orders_' + Date.now() + '.csv'; a.click();
+  showToast('CSV downloaded ✅');
+}
+
+/* ---------- SAVE ALL ---------- */
+function saveAll() { saveLoc(); saveDelivery(); saveUPI(); saveToggles(); saveNotifs(); showToast('All settings saved ✅'); }
+
+/* ---------- PAGE NAV ---------- */
+const PAGE_TITLES = { dashboard:'Dashboard', orders:'Orders', menu:'Menu Manager', toggles:'Site Toggles', location:'Sender Location', delivery:'Delivery Config', upi:'UPI Settings', offers:'Offers', golden:'Golden People', notifications:'Notifications', sheets:'Google Sheets' };
+function gp(name, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nl').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  if (el) el.classList.add('active');
+  document.getElementById('pageTitle').textContent = PAGE_TITLES[name] || name;
+  if (name === 'orders')    renderOrders();
+  if (name === 'dashboard') renderDashboard();
+  if (name === 'golden')    loadGolden();
+  if (name === 'delivery')  renderPrepGrid();
+}
+
+/* ---------- MODAL HELPERS ---------- */
+function openMo(id)  { document.getElementById(id).classList.add('open'); }
+function closeMo(id) { document.getElementById(id).classList.remove('open'); }
+
+/* ---------- CLOCK ---------- */
+setInterval(() => { document.getElementById('clk').textContent = new Date().toLocaleString('en-IN', { weekday:'short', day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' }); }, 1000);
+
+/* ---------- INIT ---------- */
+loadLoc(); loadDelivery(); loadUPI(); loadNotifs(); loadSheets(); loadToggles();
+renderDashboard(); renderMenuGrids(); renderOffers();
+</script>
+</body>
+</html>

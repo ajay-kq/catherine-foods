@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Track Your Order — Amma's Kitchen</title>
+<link href="https://fonts.googleapis.com/css2?family=Yeseva+One&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+:root{--sf:#E8620A;--sf-l:#FDF0E8;--sf-d:#B34A00;--tu:#F5A623;--gr:#2D7A3A;--gr-l:#EAF5EC;--brown:#3D1F0A;--cream:#FDFAF5;--text:#2A1A08;--muted:#7A6050;--bdr:rgba(61,31,10,.1)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);min-height:100vh}
+header{background:var(--brown);color:#fff;padding:.82rem 1.5rem;display:flex;align-items:center;gap:.68rem}
+.h-logo{width:33px;height:33px;border-radius:50%;background:var(--sf);display:flex;align-items:center;justify-content:center;font-size:.92rem;flex-shrink:0}
+.h-brand{font-family:'Yeseva One',serif;font-size:1.02rem;color:var(--tu)}
+.h-sub{font-size:.63rem;color:rgba(255,255,255,.42)}
+.h-id{margin-left:auto;font-size:.7rem;color:rgba(255,255,255,.4)}
+.wrap{max-width:860px;margin:0 auto;padding:1.3rem 1rem}
+.card{background:#fff;border-radius:14px;border:1px solid var(--bdr);overflow:hidden;margin-bottom:.95rem}
+.card-h{padding:.82rem 1.08rem;border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between}
+.card-h h3{font-family:'Yeseva One',serif;font-size:.98rem}
+/* ETA */
+.eta-card{background:var(--brown);color:#fff;border-radius:14px;padding:1.05rem 1.35rem;margin-bottom:.95rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.95rem}
+.eta-left{display:flex;align-items:center;gap:.82rem}
+.eta-icon{font-size:2rem;flex-shrink:0}
+.eta-title{font-family:'Yeseva One',serif;font-size:.95rem;color:var(--tu)}
+.eta-sub{font-size:.72rem;color:rgba(255,255,255,.5);margin-top:.1rem}
+.eta-time{font-size:2.3rem;font-weight:700;color:var(--tu);text-align:right;line-height:1}
+.eta-unit{font-size:.66rem;color:rgba(255,255,255,.42);text-align:right}
+/* TIMELINE */
+.tl{display:flex;justify-content:space-between;position:relative;padding:.22rem .5rem 0}
+.tl-track{position:absolute;top:16px;left:.5rem;right:.5rem;height:3px;background:var(--bdr)}
+.tl-prog{position:absolute;top:16px;left:.5rem;height:3px;background:var(--sf);transition:width .8s ease;z-index:1}
+.tl-step{display:flex;flex-direction:column;align-items:center;gap:.35rem;position:relative;z-index:2;flex:1}
+.tl-dot{width:29px;height:29px;border-radius:50%;border:2.5px solid var(--bdr);background:var(--cream);display:flex;align-items:center;justify-content:center;font-size:.8rem;transition:all .35s}
+.tl-dot.done{background:var(--gr);border-color:var(--gr);color:#fff}
+.tl-dot.active{background:var(--sf);border-color:var(--sf);color:#fff;animation:dpulse 1.6s ease-in-out infinite}
+@keyframes dpulse{0%,100%{box-shadow:0 0 0 0 rgba(232,98,10,.4)}60%{box-shadow:0 0 0 8px rgba(232,98,10,0)}}
+.tl-lbl{font-size:.63rem;color:var(--muted);text-align:center;max-width:66px;font-weight:500;line-height:1.35}
+.tl-step.active .tl-lbl{color:var(--sf);font-weight:600}
+.tl-step.done .tl-lbl{color:var(--gr)}
+/* MAP */
+#tMap{height:360px;display:block}
+.live-badge{display:flex;align-items:center;gap:.28rem;background:var(--gr-l);color:var(--gr);border:1px solid #C0DD97;border-radius:9px;padding:.15rem .52rem;font-size:.66rem;font-weight:500}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--gr);animation:blink 1.2s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.18}}
+/* ORDER DETAILS */
+.dr{display:flex;justify-content:space-between;font-size:.78rem;padding:.26rem 0;border-bottom:1px solid var(--bdr)}
+.dr:last-child{border-bottom:none}
+.dr span:first-child{color:var(--muted)}
+.dr span:last-child{font-weight:500;text-align:right;max-width:60%}
+/* DELIVERY PARTNER */
+.dp-card{background:var(--sf-l);border:1px solid rgba(232,98,10,.2);border-radius:13px;padding:.92rem;display:flex;align-items:center;gap:.82rem;margin-bottom:.95rem}
+.dp-av{width:46px;height:46px;border-radius:50%;background:var(--sf);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
+.dp-name{font-weight:500;font-size:.88rem}
+.dp-sub{font-size:.7rem;color:var(--muted);margin-top:.1rem}
+.dp-call{margin-left:auto;background:var(--sf);color:#fff;border:none;padding:.46rem .92rem;border-radius:16px;font-size:.75rem;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif}
+/* NO ORDER */
+.no-order{text-align:center;padding:3rem 1.5rem;color:var(--muted)}
+.no-order-icon{font-size:2.8rem;margin-bottom:.92rem;opacity:.3}
+.toast{position:fixed;bottom:1.2rem;left:50%;transform:translateX(-50%);background:var(--brown);color:#fff;padding:.52rem 1.15rem;border-radius:20px;font-size:.76rem;display:none;z-index:100;white-space:nowrap}
+@media(max-width:560px){#tMap{height:255px}.eta-time{font-size:1.95rem}.tl-dot{width:24px;height:24px;font-size:.72rem}.tl-lbl{font-size:.58rem;max-width:52px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="h-logo">🍛</div>
+  <div><div class="h-brand">Amma's Kitchen</div><div class="h-sub">Live Order Tracking</div></div>
+  <div class="h-id" id="hId"></div>
+</header>
+
+<div class="wrap">
+  <div class="no-order" id="noOrder" style="display:none">
+    <div class="no-order-icon">🍽️</div>
+    <div style="font-size:.92rem;font-weight:500;margin-bottom:.38rem">Order not found</div>
+    <div style="font-size:.78rem">Check your Order ID or <a href="customer.html" style="color:var(--sf)">place a new order</a></div>
+  </div>
+  <div id="trackContent">
+    <!-- ETA -->
+    <div class="eta-card">
+      <div class="eta-left">
+        <div class="eta-icon" id="etaIcon">⏱️</div>
+        <div><div class="eta-title" id="etaTitle">Loading…</div><div class="eta-sub" id="etaSub"></div></div>
+      </div>
+      <div><div class="eta-time" id="etaTime">--</div><div class="eta-unit">mins remaining</div></div>
+    </div>
+    <!-- STATUS TIMELINE -->
+    <div class="card">
+      <div class="card-h"><h3>Order Status</h3></div>
+      <div style="padding:1.05rem 1rem 1.25rem">
+        <div class="tl" id="tlWrap">
+          <div class="tl-track"></div><div class="tl-prog" id="tlProg" style="width:0%"></div>
+          <div class="tl-step" data-s="Pending"><div class="tl-dot">📋</div><div class="tl-lbl">Received</div></div>
+          <div class="tl-step" data-s="Confirmed"><div class="tl-dot">✅</div><div class="tl-lbl">Confirmed</div></div>
+          <div class="tl-step" data-s="Preparing"><div class="tl-dot">👩‍🍳</div><div class="tl-lbl">Preparing</div></div>
+          <div class="tl-step" data-s="Out for Delivery"><div class="tl-dot">🛵</div><div class="tl-lbl">Out for Delivery</div></div>
+          <div class="tl-step" data-s="Delivered"><div class="tl-dot">🎉</div><div class="tl-lbl">Delivered</div></div>
+        </div>
+      </div>
+    </div>
+    <!-- DELIVERY PARTNER (shown when out for delivery) -->
+    <div class="dp-card" id="dpCard" style="display:none">
+      <div class="dp-av">🛵</div>
+      <div><div class="dp-name">Delivery Partner</div><div class="dp-sub" id="dpSub">On the way to you!</div></div>
+      <button class="dp-call" onclick="showToast('Calling delivery partner…')">📞 Call</button>
+    </div>
+    <!-- MAP -->
+    <div class="card">
+      <div class="card-h">
+        <h3>Live Tracking Map</h3>
+        <div class="live-badge"><div class="live-dot"></div>Live</div>
+      </div>
+      <div id="tMap"></div>
+    </div>
+    <!-- ORDER DETAILS -->
+    <div class="card"><div class="card-h"><h3>Order Details</h3></div><div style="padding:.82rem 1.08rem" id="orderDetails"></div></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="shared.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const params = new URLSearchParams(location.search);
+const orderId = params.get('order') || '';
+document.getElementById('hId').textContent = orderId ? '#' + orderId : '';
+
+const STATUSES = ['Pending','Confirmed','Preparing','Out for Delivery','Delivered'];
+const PROG = { Pending:0, Confirmed:25, Preparing:50, 'Out for Delivery':75, Delivered:100 };
+const ICONS = { Pending:'📋', Confirmed:'✅', Preparing:'👩‍🍳', 'Out for Delivery':'🛵', Delivered:'🎉', Closed:'✅' };
+const SUBS  = { Pending:'Waiting for confirmation', Confirmed:'Order confirmed!', Preparing:'Being cooked fresh for you', 'Out for Delivery':'On the way to you!', Delivered:'Enjoy your meal! 🎉', Closed:'Order completed' };
+
+let tMap = null, kitchenMk = null, customerMk = null, riderMk = null;
+let riderLat, riderLng, animInt, etaInt;
+let lastStatus = null;
+
+function initMap(order) {
+  const sLat = Cfg.get('senderLat', 9.91918526788082), sLng = Cfg.get('senderLng', 78.09422025024031);
+  const cLat = order?.loc?.lat, cLng = order?.loc?.lng;
+  if (tMap) { tMap.remove(); tMap = null; }
+  tMap = L.map('tMap').setView([sLat, sLng], 13);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution:'© OpenStreetMap' }).addTo(tMap);
+  // Kitchen pin
+  const kIcon = L.divIcon({ html:`<div style="background:#E8620A;width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.18rem;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.2)">🍛</div>`, className:'', iconSize:[38,38], iconAnchor:[19,19] });
+  kitchenMk = L.marker([sLat, sLng], { icon:kIcon }).addTo(tMap).bindPopup("<b>Amma's Kitchen</b><br>Your food is prepared here");
+  if (cLat && cLng) {
+    const custIcon = L.divIcon({ html:`<div style="background:#2D7A3A;width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.18rem;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.2)">🏠</div>`, className:'', iconSize:[38,38], iconAnchor:[19,19] });
+    customerMk = L.marker([cLat, cLng], { icon:custIcon }).addTo(tMap).bindPopup("<b>Your Location</b><br>Delivery destination");
+    L.polyline([[sLat,sLng],[cLat,cLng]], { color:'#E8620A', weight:3, dashArray:'8,6', opacity:.6 }).addTo(tMap);
+    tMap.fitBounds([[sLat,sLng],[cLat,cLng]], { padding:[42,42] });
+    // Rider starts at kitchen
+    riderLat = sLat + (cLat - sLat) * 0.05;
+    riderLng = sLng + (cLng - sLng) * 0.05;
+    const rIcon = L.divIcon({ html:`<div style="background:#F5A623;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.22rem;border:3px solid #fff;box-shadow:0 2px 10px rgba(0,0,0,.22)">🛵</div>`, className:'', iconSize:[40,40], iconAnchor:[20,20] });
+    riderMk = L.marker([riderLat, riderLng], { icon:rIcon }).addTo(tMap).bindPopup("<b>Delivery Partner</b><br>On the way!");
+  }
+}
+
+function animateRider(order) {
+  if (order.status !== 'Out for Delivery' || !order.loc?.lat || !riderMk) return;
+  const cLat = order.loc.lat, cLng = order.loc.lng;
+  const sLat = Cfg.get('senderLat', 9.91918526788082), sLng = Cfg.get('senderLng', 78.09422025024031);
+  let progress = 0.05;
+  if (animInt) clearInterval(animInt);
+  animInt = setInterval(() => {
+    progress = Math.min(progress + 0.004, 0.97);
+    riderLat = sLat + (cLat - sLat) * progress;
+    riderLng = sLng + (cLng - sLng) * progress;
+    riderMk.setLatLng([riderLat, riderLng]);
+  }, 5000);
+}
+
+function updateTimeline(status) {
+  const idx = STATUSES.indexOf(status);
+  document.getElementById('tlProg').style.width = (PROG[status] || 0) + '%';
+  document.querySelectorAll('.tl-step').forEach((step, i) => {
+    const dot = step.querySelector('.tl-dot');
+    step.classList.remove('active','done'); dot.classList.remove('active','done');
+    if (i < idx) { step.classList.add('done'); dot.classList.add('done'); }
+    else if (i === idx) { step.classList.add('active'); dot.classList.add('active'); }
+  });
+}
+
+function updateETA(order) {
+  const status = order.status;
+  document.getElementById('etaIcon').textContent  = ICONS[status] || '⏱️';
+  document.getElementById('etaTitle').textContent = SUBS[status] || '';
+  if (status === 'Delivered' || status === 'Closed') {
+    document.getElementById('etaTime').textContent = '✓';
+    document.getElementById('etaSub').textContent  = 'Order delivered!';
+    document.getElementById('dpCard').style.display = 'none';
+    if (etaInt) clearInterval(etaInt);
+    return;
+  }
+  const eta = order.loc?.eta || { prep:25, delivery:20, total:45 };
+  let mins = status === 'Out for Delivery' ? eta.delivery : status === 'Preparing' ? eta.delivery + 5 : eta.total;
+  document.getElementById('etaTime').textContent = mins;
+  document.getElementById('etaSub').textContent  = status === 'Out for Delivery'
+    ? `~${eta.delivery} min delivery remaining`
+    : `~${eta.prep} min prep + ~${eta.delivery} min delivery`;
+  if (status === 'Out for Delivery') {
+    document.getElementById('dpCard').style.display = 'flex';
+    document.getElementById('dpSub').textContent = `On the way — ~${eta.delivery} mins remaining`;
+  }
+  if (etaInt) clearInterval(etaInt);
+  etaInt = setInterval(() => {
+    mins = Math.max(0, mins - 1);
+    document.getElementById('etaTime').textContent = mins;
+    if (mins <= 0) clearInterval(etaInt);
+  }, 60000);
+}
+
+function renderDetails(order) {
+  const items = (order.items || []).map(i => `<div class="dr"><span>${i.name} ×${i.qty}</span><span>₹${i.price * i.qty}</span></div>`).join('');
+  document.getElementById('orderDetails').innerHTML = `
+    <div class="dr"><span>Order ID</span><span style="color:var(--sf-d)">#${order.orderId}</span></div>
+    <div class="dr"><span>Customer</span><span>${order.customer?.name}</span></div>
+    <div class="dr"><span>Delivery To</span><span style="font-size:.72rem">${(order.loc?.address||'—').substring(0,52)}…</span></div>
+    ${items}
+    <div class="dr" style="font-weight:700;color:var(--sf-d)"><span>Total Paid</span><span>₹${order.total}</span></div>
+    <div class="dr"><span>Order Time</span><span>${order.date}</span></div>`;
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast'); t.textContent = msg; t.style.display = 'block';
+  setTimeout(() => t.style.display = 'none', 2200);
+}
+
+function refresh() {
+  const order = findOrder(orderId);
+  if (!order) {
+    document.getElementById('noOrder').style.display = 'block';
+    document.getElementById('trackContent').style.display = 'none';
+    return;
+  }
+  updateTimeline(order.status);
+  updateETA(order);
+  renderDetails(order);
+  if (order.status !== lastStatus) {
+    lastStatus = order.status;
+    if (order.status === 'Out for Delivery') animateRider(order);
+  }
+}
+
+// INIT
+const order = findOrder(orderId);
+if (order) { initMap(order); refresh(); if (order.status === 'Out for Delivery') animateRider(order); }
+else { document.getElementById('noOrder').style.display = 'block'; document.getElementById('trackContent').style.display = 'none'; }
+setInterval(refresh, 12000);
+</script>
+</body>
+</html>
